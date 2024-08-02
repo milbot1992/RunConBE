@@ -1,0 +1,25 @@
+{
+    "dependencies": {
+      "axios": "^1.6.0",
+      "dotenv": "^16.3.1",
+      "express": "^4.18.2",
+      "jest": "^29.7.0",
+      "jest-sorted": "^1.0.14",
+      "mongodb": "^6.2.0",
+      "mongoose": "^8.0.0",
+      "supertest": "^6.3.3",
+      "node": "^21.1.0",
+      "node-cron": "^3.0.2",
+      "nodemon": "^3.0.1"
+    },
+    "devDependencies": {
+      "husky": "^8.0.3"
+    },
+    "scripts": {
+      "test": "NODE_ENV=test jest ",
+      "prepare": "husky install",
+      "seed": "NODE_ENV=test node ./db/seeds/run-seed.js",
+      "seed-prod": "NODE_ENV=production node ./db/seeds/run-seed.js",
+      "start" : "node listen.js"
+    }
+  }
