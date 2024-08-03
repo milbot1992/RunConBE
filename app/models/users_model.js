@@ -1,5 +1,4 @@
 const {UserModel,UsersRunningGroupsModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
-const mongoose = require('mongoose');
 
 exports.fetchUserById = (user_id) => {
 
@@ -99,6 +98,66 @@ exports.createUser = async (newUser) => {
         return savedUser;
     } catch (err) {
         console.error('Error creating user:', err);
+        throw err;
+    }
+};
+
+exports.updateUserById = async (user_id, updates) => {
+    try {
+        // Find the original user by user_id and convert to plain object
+        const originalUser = await UserModel.findOne({ user_id: Number(user_id) }).lean();
+
+        if (!originalUser) {
+            throw { status: 404, message: 'User not found!' };
+        }
+
+        // Create a copy of the original user object for comparison
+        const originalUserObject = { ...originalUser }; 
+
+        // Apply the updates
+        const updatedUser = await UserModel.findOneAndUpdate(
+            { user_id: Number(user_id) },
+            { $set: updates },
+            { new: true, lean: true } // Use lean to get a plain object
+        );
+
+        // Create a copy of the updated user object for comparison
+        const updatedUserObject = { ...updatedUser };
+
+        // Remove `_id` and other non-updatable fields from the comparison
+        delete originalUserObject._id;
+        delete originalUserObject.__v;
+        delete updatedUserObject._id;
+        delete updatedUserObject.__v;
+
+        // Compare the original and updated user objects
+        const isModified = Object.keys(updates).some((key) => {
+            return originalUserObject[key] !== updatedUserObject[key];
+        });
+
+        if (!isModified) {
+            return { status: 400};
+        }
+
+        return updatedUser;
+    } catch (err) {
+        console.error('Error updating user:', err);
+        throw err;
+    }
+};
+
+exports.removeUserById = async (user_id) => {
+    try {
+        // Find and delete the user by user_id
+        const deletedUser = await UserModel.findOneAndDelete({ user_id: Number(user_id) });
+
+        if (!deletedUser) {
+            throw { status: 404, message: 'User not found!' };
+        }
+
+        return deletedUser;
+    } catch (err) {
+        console.error('Error deleting user:', err);
         throw err;
     }
 };

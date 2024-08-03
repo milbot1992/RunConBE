@@ -79,9 +79,37 @@ const routeWaypointsTableSchema = new mongoose.Schema({
 
 const RouteWaypointsTableModel = mongoose.model("RouteWaypointsTable", routeWaypointsTableSchema);
 
+// Chats Schema and Model
+const ChatsSchema = new mongoose.Schema({
+    chat_id: { type: Number, required: true, unique: true },
+    is_group: { type: Boolean, required: true },
+    group_id: { type: Number, required: true, ref: 'Group' },
+    created_at: { type: Date, default: Date.now },
+}, { versionKey: false });
+
+const ChatsModel = mongoose.model("Chats", ChatsSchema);
+
+// Chats Participants Schema and Model
+const ChatParticipantsSchema = new mongoose.Schema({
+    chat_id: { type: Number, required: true, ref: 'Chats' },
+    user_id: { type: Number, required: true, ref: 'User' },
+}, { versionKey: false });
+
+const ChatParticipantsModel = mongoose.model("ChatParticipants", ChatParticipantsSchema);
+
+// Messages Schema and Model
+const MessagesSchema = new mongoose.Schema({
+    message_id: { type: Number, required: true, unique: true },
+    chat_id: { type: Number, required: true, ref: 'Chats' },
+    sender_id: { type: Number, required: true, ref: 'User' },
+    content: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now }
+}, { versionKey: false });
+
+const MessagesModel = mongoose.model("Messages", MessagesSchema);
 
 // seedData function
-function seedData({ groupData, userData, usersRunningGroupsData, runData, routeData, usersAttendingRunsData, routeWaypointsData }) {
+function seedData({ groupData, userData, usersRunningGroupsData, runData, routeData, usersAttendingRunsData, routeWaypointsData, chatData, chatParticipantData, messagesData }) {
     return Promise.all([
         // Drop the existing collections
         GroupModel.collection.drop(),
@@ -90,7 +118,10 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
         RunModel.collection.drop(),
         RouteModel.collection.drop(),
         UsersAttendingRunsModel.collection.drop(),
-        RouteWaypointsTableModel.collection.drop()
+        RouteWaypointsTableModel.collection.drop(),
+        ChatsModel.collection.drop(),
+        ChatParticipantsModel.collection.drop(),
+        MessagesModel.collection.drop()
     ])
     .then(() => {
         const groupsWithIds = groupData.map((group, index) => ({
@@ -119,6 +150,18 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
             ...waypoint,
             waypoint_id: index + 1,
         }));
+
+        const chatsWithIds = chatData.map((chat, index) => ({
+            ...chat,
+            chat_id: index + 1,
+        }));
+        const chatParticipantsWithIds = chatParticipantData.map((entry) => ({
+            ...entry,
+          }));
+        const messagesWithIds = messagesData.map((message, index) => ({
+            ...message,
+            message_id: index + 1,
+        }));
   
         return Promise.all([
             // Insert the new data
@@ -128,13 +171,16 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
             RunModel.insertMany(runsWithIds),
             UsersAttendingRunsModel.insertMany(usersAttendingRunsWithIds),
             RouteModel.insertMany(routesWithIds),
-            RouteWaypointsTableModel.insertMany(routeWaypointsWithIds)
+            RouteWaypointsTableModel.insertMany(routeWaypointsWithIds),
+            ChatsModel.insertMany(chatsWithIds),
+            ChatParticipantsModel.insertMany(chatParticipantsWithIds),
+            MessagesModel.collection.insertMany(messagesWithIds),
         ])
         .then(() => console.log('Data seeded successfully'))
         .catch((err) => console.error('Error seeding data:', err));
     })
     .catch((err) => console.error('Error dropping collections:', err));
   }
-  
 
-module.exports = { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, seedData };
+
+module.exports = { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel, seedData };

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const {GroupModel,UsersRunningGroupsModel} = require("../../db/seeds/seed")
 
 exports.fetchAllGroups = async (limit = 10, p = 1) => {
@@ -83,6 +82,66 @@ exports.createGroup = async (newGroup) => {
         return savedGroup;
     } catch (err) {
         console.error('Error creating group:', err);
+        throw err;
+    }
+};
+
+exports.updateGroupById = async (group_id, updates) => {
+    try {
+        // Find the original group by group_id and convert to plain object
+        const originalGroup = await GroupModel.findOne({ group_id: Number(group_id) }).lean();
+
+        if (!originalGroup) {
+            throw { status: 404, message: 'Group not found!' };
+        }
+
+        // Create a copy of the original user object for comparison
+        const originalGroupObject = { ...originalGroup }; 
+
+        // Apply the updates
+        const updatedGroup = await GroupModel.findOneAndUpdate(
+            { group_id: Number(group_id) },
+            { $set: updates },
+            { new: true, lean: true } // Use lean to get a plain object
+        );
+
+        // Create a copy of the updated user object for comparison
+        const updatedGroupObject = { ...updatedGroup };
+
+        // Remove `_id` and other non-updatable fields from the comparison
+        delete originalGroupObject._id;
+        delete originalGroupObject.__v;
+        delete updatedGroupObject._id;
+        delete updatedGroupObject.__v;
+
+        // Compare the original and updated user objects
+        const isModified = Object.keys(updates).some((key) => {
+            return originalGroupObject[key] !== updatedGroupObject[key];
+        });
+
+        if (!isModified) {
+            return { status: 400};
+        }
+
+        return updatedGroup;
+    } catch (err) {
+        console.error('Error updating group:', err);
+        throw err;
+    }
+};
+
+exports.removeGroupById = async (group_id) => {
+    try {
+        // Find and delete the group by group_id
+        const deletedGroup = await GroupModel.findOneAndDelete({ group_id: Number(group_id) });
+
+        if (!deletedGroup) {
+            throw { status: 404, message: 'Group not found!' };
+        }
+
+        return deletedGroup;
+    } catch (err) {
+        console.error('Error deleting group:', err);
         throw err;
     }
 };

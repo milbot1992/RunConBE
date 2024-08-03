@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const {RunModel, RouteModel, RouteWaypointsTableModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
 
 exports.fetchRunsByGroup = async (group_id) => {
@@ -114,6 +113,87 @@ exports.fetchRunsByUserId = async (user_id) => {
         return runs;
     } catch (err) {
         console.error('Error fetching runs by user:', err);
+        throw err;
+    }
+};
+
+exports.createRun = async (newRun) => {
+    try {
+        // Fetch the latest user_id
+        const maxRun = await RunModel.findOne({}, { run_id: 1 }, { sort: { run_id: -1 } });
+        const newRunId = maxRun ? maxRun.run_id + 1 : 1;
+        
+        // Create the new user with the new user_id
+        const run = new RunModel({
+            ...newRun,  
+            run_id: newRunId 
+        });
+
+        // Save the user
+        const savedRun = await run.save();
+        return savedRun;
+    } catch (err) {
+        console.error('Error creating run:', err);
+        throw err;
+    }
+};
+
+exports.updateRunById = async (run_id, updates) => {
+    try {
+        // Find the original run by run_id and convert to plain object
+        const originalRun = await RunModel.findOne({ run_id: Number(run_id) }).lean();
+
+        if (!originalRun) {
+            throw { status: 404, message: 'Run not found!' };
+        }
+
+        // Create a copy of the original run object for comparison
+        const originalRunObject = { ...originalRun }; 
+
+        // Apply the updates
+        const updatedRun = await RunModel.findOneAndUpdate(
+            { run_id: Number(run_id) },
+            { $set: updates },
+            { new: true, lean: true } // Use lean to get a plain object
+        );
+
+        // Create a copy of the updated run object for comparison
+        const updatedRunObject = { ...updatedRun };
+
+        // Remove `_id` and other non-updatable fields from the comparison
+        delete originalRunObject._id;
+        delete originalRunObject.__v;
+        delete updatedRunObject._id;
+        delete updatedRunObject.__v;
+
+        // Compare the original and updated run objects
+        const isModified = Object.keys(updates).some((key) => {
+            return originalRunObject[key] !== updatedRunObject[key];
+        });
+
+        if (!isModified) {
+            return { status: 400};
+        }
+
+        return updatedRun;
+    } catch (err) {
+        console.error('Error updating run:', err);
+        throw err;
+    }
+};
+
+exports.removeRunById = async (run_id) => {
+    try {
+        // Find and delete the run by run_id
+        const deletedRun = await RunModel.findOneAndDelete({ run_id: Number(run_id) });
+
+        if (!deletedRun) {
+            throw { status: 404, message: 'Run not found!' };
+        }
+
+        return deletedRun;
+    } catch (err) {
+        console.error('Error deleting run:', err);
         throw err;
     }
 };

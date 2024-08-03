@@ -5,3 +5,6 @@ exports.runData = require('./runs.js');
 exports.usersAttendingRunsData = require('./users_attending_runs.js');
 exports.routeData = require('./routes.js');
 exports.routeWaypointsData = require('./route_waypoints.js');
+exports.chatData = require('./chats.js');
+exports.chatParticipantData = require('./chat_participants.js');
+exports.messagesData = require('./messages.js');
