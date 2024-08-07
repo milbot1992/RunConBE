@@ -1,0 +1,295 @@
+{
+    "GET /groups": {
+        "description": "serves up all the groups",
+        "exampleResponse": {
+            "groups": [
+                {
+                    "group_id": 1,
+                    "group_name": "Hiking Enthusiasts",
+                    "description": "A group for hiking enthusiasts",
+                    "created_at": "2024-01-01T12:00:00.000Z"
+                }
+            ]
+        }
+    },
+    "GET /groups/group/:group_id": {
+        "description": "serves up the details of a specific group",
+        "exampleResponse": {
+            "group": {
+                "group_id": 1,
+                "group_name": "Hiking Enthusiasts",
+                "description": "A group for hiking enthusiasts",
+                "created_at": "2024-01-01T12:00:00.000Z"
+            }
+        }
+    },
+    "GET /groups/user/:user_id": {
+        "description": "serves up all the groups a specific user belongs to",
+        "exampleResponse": {
+            "groups": [
+                {
+                    "group_id": 1,
+                    "group_name": "Hiking Enthusiasts"
+                }
+            ]
+        }
+    },
+    "GET /groups/:postcode": {
+        "description": "serves up groups local to a specific postcode",
+        "exampleResponse": {
+            "groups": [
+                {
+                    "group_id": 1,
+                    "group_name": "Hiking Enthusiasts"
+                }
+            ]
+        }
+    },
+    "POST /groups": {
+        "description": "allows users to post a new group",
+        "exampleBody": {
+            "group_name": "New Group",
+            "description": "A new group description"
+        }
+    },
+    "PATCH /groups/:group_id": {
+        "description": "allows users to update details of a specific group",
+        "exampleBody": {
+            "group_name": "Updated Group Name",
+            "description": "Updated group description"
+        }
+    },
+    "DELETE /groups/:group_id": {
+        "description": "deletes a specific group",
+        "exampleResponse": {
+            "status": "Group successfully deleted"
+        }
+    },
+    "GET /users/user/:user_id": {
+        "description": "serves up the details of a specific user",
+        "exampleResponse": {
+            "user": {
+                "user_id": 1,
+                "username": "john_doe",
+                "first_name": "John",
+                "second_name": "Doe",
+                "gender": "male",
+                "single_open": true,
+                "connect_open": true,
+                "open_to_gender": "female"
+            }
+        }
+    },
+    "GET /users/group/:group_id": {
+        "description": "serves up all users belonging to a specific group",
+        "exampleResponse": {
+            "users": [
+                {
+                    "user_id": 1,
+                    "username": "john_doe",
+                    "first_name": "John",
+                    "second_name": "Doe",
+                    "gender": "male",
+                    "single_open": true,
+                    "connect_open": true,
+                    "open_to_gender": "female"
+                }
+            ]
+        }
+    },
+    "GET /users/run/:run_id": {
+        "description": "serves up all users participating in a specific run",
+        "exampleResponse": {
+            "users": [
+                {
+                    "user_id": 1,
+                    "username": "john_doe",
+                    "first_name": "John",
+                    "second_name": "Doe",
+                    "gender": "male",
+                    "single_open": true,
+                    "connect_open": true,
+                    "open_to_gender": "female"
+                }
+            ]
+        }
+    },
+    "POST /users": {
+        "description": "allows users to post a new user",
+        "exampleBody": {
+            "username": "newuser7",
+            "first_name": "Grace",
+            "second_name": "Lee",
+            "gender": "female",
+            "single_open": true,
+            "connect_open": false,
+            "open_to_gender": "male"
+        }
+    },
+    "PATCH /users": {
+        "description": "allows users to update details of a specific user",
+        "exampleBody": {
+            "username": "updated_username",
+            "first_name": "Updated",
+            "second_name": "Name"
+        }
+    },
+    "DELETE /users": {
+        "description": "deletes a specific user",
+        "exampleResponse": {
+            "status": "User successfully deleted"
+        }
+    },
+    "GET /runs/run/:run_id": {
+        "description": "serves up the details of a specific run",
+        "exampleResponse": {
+            "run": {
+                "run_id": 1,
+                "group_id": 3,
+                "date": "2024-10-01",
+                "time": "07:45",
+                "meeting_point": "Central Plaza Entrance",
+                "distance": 5,
+                "distance_unit": "km",
+                "route_id": 2
+            }
+        }
+    },
+    "GET /runs/user/:user_id": {
+        "description": "serves up all runs a specific user is participating in",
+        "exampleResponse": {
+            "runs": [
+                {
+                    "run_id": 1,
+                    "date": "2024-10-01"
+                }
+            ]
+        }
+    },
+    "GET /runs/group/:group_id": {
+        "description": "serves up all runs for a specific group",
+        "exampleResponse": {
+            "runs": [
+                {
+                    "run_id": 1,
+                    "date": "2024-10-01"
+                }
+            ]
+        }
+    },
+    "POST /runs": {
+        "description": "allows users to post a new run",
+        "exampleBody": {
+            "group_id": 3,
+            "date": "2024-10-01",
+            "time": "07:45",
+            "meeting_point": "Central Plaza Entrance",
+            "distance": 5,
+            "distance_unit": "km",
+            "route_id": 2
+        }
+    },
+    "PATCH /runs": {
+        "description": "allows users to update details of a specific run",
+        "exampleBody": {
+            "date": "2024-10-02",
+            "time": "08:00"
+        }
+    },
+    "DELETE /runs": {
+        "description": "deletes a specific run",
+        "exampleResponse": {
+            "status": "Run successfully deleted"
+        }
+    },
+    "GET /posts/groups/:user_id": {
+        "description": "serves up all posts for groups a specific user belongs to",
+        "exampleResponse": {
+            "posts": [
+                {
+                    "post_id": 5,
+                    "is_group": true,
+                    "group_id": 6,
+                    "run_id": 4,
+                    "user_id": 2,
+                    "title": "Test Post",
+                    "description": "Testing a post",
+                    "picture_id": 4,
+                    "created_at": "2024-08-06T00:02:00.000Z"
+                }
+            ]
+        }
+    },
+    "POST /posts/:user_id": {
+        "description": "allows users to post a new post",
+        "exampleBody": {
+            "is_group": true,
+            "group_id": 6,
+            "run_id": 4,
+            "user_id": 2,
+            "title": "Test Post",
+            "description": "Testing a post",
+            "picture_id": 4
+        }
+    },
+    "GET /pictures/:group_id": {
+        "description": "serves up all pictures for a specific group",
+        "exampleResponse": {
+            "pictures": [
+                {
+                    "picture_id": 1,
+                    "picture_url": "https://example.com/picture.jpg",
+                    "description": "example description",
+                    "post_id": 4,
+                    "group_id": 5
+                }
+            ]
+        }
+    },
+    "GET /chats/:user_id": {
+        "description": "serves up all chats for a specific user",
+        "exampleResponse": {
+            "chats": [
+                {
+                    "chat_id": 1,
+                    "group_id": 2
+                }
+            ]
+        }
+    },
+    "GET /messages/:chat_id": {
+        "description": "serves up all messages for a specific chat",
+        "exampleResponse": {
+            "messages": [
+                {
+                    "message_id": 1,
+                    "chat_id": 1,
+                    "sender_id": 1,
+                    "content": "Hello!",
+                    "timestamp": "2024-08-01T00:01:00.000Z"
+                }
+            ]
+        }
+    },
+    "POST /messages": {
+        "description": "allows users to post a new message in a specific chat",
+        "exampleBody": {
+            "sender_id": 1,
+            "chat_id": 1,
+            "content": "Test message!",
+            "timestamp": "2024-08-06T00:02:00.000Z"
+        }
+    },
+    "PATCH /messages/:message_id": {
+        "description": "allows users to update a specific message",
+        "exampleBody": {
+            "content": "Updated message content"
+        }
+    },
+    "DELETE /messages/:message_id": {
+        "description": "deletes a specific message",
+        "exampleResponse": {
+            "status": "Message successfully deleted"
+        }
+    }
+}

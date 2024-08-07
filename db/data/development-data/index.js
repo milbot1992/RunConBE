@@ -8,3 +8,5 @@ exports.routeWaypointsData = require('./route_waypoints.js');
 exports.chatData = require('./chats.js');
 exports.chatParticipantData = require('./chat_participants.js');
 exports.messagesData = require('./messages.js');
+exports.picturesData = require('./pictures.js');
+exports.postsData = require('./posts.js');

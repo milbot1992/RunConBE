@@ -100,16 +100,43 @@ const ChatParticipantsModel = mongoose.model("ChatParticipants", ChatParticipant
 // Messages Schema and Model
 const MessagesSchema = new mongoose.Schema({
     message_id: { type: Number, required: true, unique: true },
+    timestamp: { type: Date, default: Date.now },
     chat_id: { type: Number, required: true, ref: 'Chats' },
     sender_id: { type: Number, required: true, ref: 'User' },
     content: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now }
 }, { versionKey: false });
 
 const MessagesModel = mongoose.model("Messages", MessagesSchema);
 
+// Posts Schema and Model
+const PostsSchema = new mongoose.Schema({
+    post_id: { type: Number, required: true, unique: true },
+    is_group: { type: Boolean, required: true },
+    user_id: { type: Number, required: true, ref: 'User' },
+    group_id: { type: Number, required: true, ref: 'Group' },
+    run_id: { type: Number, required: true, ref: 'Run' },
+    created_at: { type: Date, default: Date.now },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    picture_id: { type: Number, required: false, ref: 'Picture' },
+}, { versionKey: false });
+
+const PostsModel = mongoose.model("Post", PostsSchema);
+
+// Pictures Schema and Model
+const PicturesSchema = new mongoose.Schema({
+    picture_id: { type: Number, required: true, unique: true },
+    user_id: { type: Number, required: true, ref: 'User' },
+    group_id: { type: Number, required: true, ref: 'Group' },
+    post_id: { type: Number, required: true, ref: 'Post' },
+    url: { type: String, required: true },
+    description: { type: String, required: false },
+}, { versionKey: false });
+
+const PicturesModel = mongoose.model("Picture", PicturesSchema);
+
 // seedData function
-function seedData({ groupData, userData, usersRunningGroupsData, runData, routeData, usersAttendingRunsData, routeWaypointsData, chatData, chatParticipantData, messagesData }) {
+function seedData({ groupData, userData, usersRunningGroupsData, runData, routeData, usersAttendingRunsData, routeWaypointsData, chatData, chatParticipantData, messagesData, postsData, picturesData }) {
     return Promise.all([
         // Drop the existing collections
         GroupModel.collection.drop(),
@@ -121,7 +148,9 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
         RouteWaypointsTableModel.collection.drop(),
         ChatsModel.collection.drop(),
         ChatParticipantsModel.collection.drop(),
-        MessagesModel.collection.drop()
+        MessagesModel.collection.drop(),
+        PostsModel.collection.drop(),
+        PicturesModel.collection.drop()
     ])
     .then(() => {
         const groupsWithIds = groupData.map((group, index) => ({
@@ -162,6 +191,14 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
             ...message,
             message_id: index + 1,
         }));
+        const postsWithIds = postsData.map((post, index) => ({
+            ...post,
+            post_id: index + 1,
+        }));
+        const picturesWithIds = picturesData.map((picture, index) => ({
+            ...picture,
+            picture_id: index + 1,
+        }));
   
         return Promise.all([
             // Insert the new data
@@ -175,6 +212,8 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
             ChatsModel.insertMany(chatsWithIds),
             ChatParticipantsModel.insertMany(chatParticipantsWithIds),
             MessagesModel.collection.insertMany(messagesWithIds),
+            PostsModel.collection.insertMany(postsWithIds),
+            PicturesModel.collection.insertMany(picturesWithIds)
         ])
         .then(() => console.log('Data seeded successfully'))
         .catch((err) => console.error('Error seeding data:', err));
@@ -183,4 +222,4 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
   }
 
 
-module.exports = { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel, seedData };
+module.exports = { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel, PostsModel, PicturesModel, seedData };

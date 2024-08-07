@@ -1,9 +1,9 @@
 const messagesRouter = require("express").Router();
-const { GetMessagesForChat } = require("../controllers/messages_controller");
+const { GetMessagesForChat, PostAMessage, patchAMessage, deleteAMessage } = require("../controllers/messages_controller");
 
 messagesRouter.get("/:chat_id", GetMessagesForChat);
-//messagesRouter.post("/", PostMessage);
-//messagesRouter.patch("/:message_id", PatchMessage);
-//messagesRouter.delete("/:message_id", DeleteMessage);
+messagesRouter.post("/", PostAMessage);
+messagesRouter.patch("/:message_id", patchAMessage);
+messagesRouter.delete("/:message_id", deleteAMessage);
 
 module.exports = messagesRouter;

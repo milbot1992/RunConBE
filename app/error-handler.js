@@ -2,6 +2,12 @@ exports.handleMongoErrors = (err, req, res, next) => {
 	if (err && err._message && err._message.includes('Group validation failed')) {
 		return res.status(400).send({ message: "Bad request" });
 	}
+	if (err && err._message && err._message.includes('Post validation failed')) {
+		return res.status(400).send({ message: "Bad request" });
+	}
+	if (err && err._message && err._message.includes('Messages validation failed')) {
+		return res.status(400).send({ message: "Bad request" });
+	}
 	if (err && err._message && err._message.includes('User validation failed')) {
 		return res.status(400).send({ message: "Bad request" });
 	}

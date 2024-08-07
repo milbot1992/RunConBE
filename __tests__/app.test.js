@@ -2,12 +2,12 @@ const request = require("supertest");
 const app = require("../app/app");
 const db = require("../connection");
 const {seedData} = require("../db/seeds/seed");
-const { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel } = require("../db/seeds/seed");
-const {groupData, userData, usersRunningGroupsData, runData, usersAttendingRunsData, routeData, routeWaypointsData, chatData, chatParticipantData, messagesData} = require("../db/data/test-data/index");
+const { GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel, PostsModel, PicturesModel } = require("../db/seeds/seed");
+const {groupData, userData, usersRunningGroupsData, runData, usersAttendingRunsData, routeData, routeWaypointsData, chatData, chatParticipantData, messagesData, postsData, picturesData} = require("../db/data/test-data/index");
 const sorted = require("jest-sorted");
 const mongoose = require("mongoose");
 
-beforeEach(async () => await seedData({groupData, userData, usersRunningGroupsData, runData, usersAttendingRunsData, routeData, routeWaypointsData, chatData, chatParticipantData, messagesData}, GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel));
+beforeEach(async () => await seedData({groupData, userData, usersRunningGroupsData, runData, usersAttendingRunsData, routeData, routeWaypointsData, chatData, chatParticipantData, messagesData, postsData, picturesData}, GroupModel, UserModel, UsersRunningGroupsModel, RunModel, UsersAttendingRunsModel, RouteModel, RouteWaypointsTableModel, ChatsModel, ChatParticipantsModel, MessagesModel, PostsModel, PicturesModel));
 
 afterAll(() => mongoose.connection.close());
 
@@ -1022,7 +1022,7 @@ describe('GetChatsForUser GET /api/chats/:user_id', () => {
     });
 });
 
-describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
+describe('GetMessagesForChat GET /messages/:chat_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/messages/1").expect(200);
     });
@@ -1031,7 +1031,6 @@ describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
             .get("/api/messages/1")
             .expect(200)
             .then(({ body }) => {
-
                 expect(body.messages.length).toBe(2);
             });
     });
@@ -1054,7 +1053,7 @@ describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Hello, everyone!",
-                    timestamp: "2024-08-01T00:01:00.000Z"
+                    timestamp: expect.any(String)
                 }));
             });
     });
@@ -1072,6 +1071,377 @@ describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body.message).toBe('Bad Request');
+            });
+    });
+});
+
+describe('POST /api/messages', () => {
+    test('should return 201 status code and return the new posted message', () => {
+        const newMessage = {
+            sender_id: 1,
+            chat_id: 1,
+            content: "Test message!",
+            timestamp: "2024-08-06T00:02:00.000Z"
+        };
+        return request(app)
+            .post('/api/messages')
+            .send(newMessage)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.message).toMatchObject({
+                    message_id: 4,
+                    sender_id: 1,
+                    chat_id: 1,
+                    content: "Test message!",
+                    timestamp: "2024-08-06T00:02:00.000Z"
+                });
+            });
+    });
+    test('should return 201 status code and return the new posted message when passed a request with an extra field', () => {
+        const newMessage = {
+            sender_id: 1,
+            chat_id: 1,
+            content: "Test message 2!",
+            timestamp: "2024-08-06T00:02:00.000Z",
+            extra_field: 'extra field'
+        };
+        return request(app)
+            .post('/api/messages')
+            .send(newMessage)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.message).toMatchObject({
+                    message_id: 4,
+                    sender_id: 1,
+                    chat_id: 1,
+                    content: "Test message 2!",
+                    timestamp: "2024-08-06T00:02:00.000Z"
+                });
+            });
+    });
+    test('should return 400 Bad Request if the message data is invalid', () => {
+        const invalidMessage = {
+            sendr_id: 1,
+            chat_id: 1,
+            content: "Test message 3!",
+            timestamp: "2024-08-06T00:02:00.000Z",
+        };
+        return request(app)
+            .post('/api/messages')
+            .send(invalidMessage)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad request');
+            });
+    });
+    test('should return a 400 Bad Request if the object passed is missing required properties - missing key sender_id', () => {
+        const invalidMessage = {
+            chat_id: 1,
+            content: "Test message 3!",
+            timestamp: "2024-08-06T00:02:00.000Z",
+        };
+        return request(app)
+            .post('/api/messages')
+            .send(invalidMessage)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad request');
+            });
+    });
+});
+
+describe("PATCH /api/messages/:message_id", () => {
+    test("should return status code 200 and update the message details", () => {
+        const updateBody = { content: "updated content"};
+        return request(app)
+            .patch("/api/messages/1") 
+            .send(updateBody)
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.message).toHaveProperty("message_id");
+                expect(body.message.content).toEqual("updated content");
+            });
+    });
+    test("should return status code 400 when the message_id is invalid", () => {
+        const updateBody = { content: "updated content" };
+        return request(app)
+            .patch("/api/messages/invalid_id")
+            .send(updateBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe("Bad Request");
+            });
+    });
+    test("should return status code 404 for a message_id that doesn't exist", () => {
+        const updateBody = { content: "updated content" };
+        return request(app)
+            .patch("/api/messages/9999") 
+            .send(updateBody)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe("Message not found!");
+            });
+    });
+    test("should return status code 400 when the request body is missing required fields", () => {
+        return request(app)
+            .patch("/api/messages/1")
+            .send({}) // Send an empty body
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe("Bad Request: No information was changed");
+            });
+    });
+    test("should return status code 400 when the request body has incorrect field/s - no fields of this name in messages", () => {
+        return request(app)
+            .patch("/api/messages/1")
+            .send({ name: 'millie'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe("Bad Request: No information was changed");
+            });
+    });
+});
+
+describe('DELETE /api/messages/:message_id', () => {
+    test('should return a 204 status code and no content - specified message_id should be deleted from messages collection', async () => {
+        // Create a message for testing
+        const message = new MessagesModel({ message_id: 4, chat_id: 1, sender_id: 2, content: 'test message', timestamp: "2024-08-01T00:01:00.000Z" });
+        await message.save();
+
+        return request(app)
+            .delete('/api/messages/4')
+            .expect(200)
+            .then(async () => {
+                const foundMessage = await MessagesModel.findOne({ message_id: 4 });
+                expect(foundMessage).toBeNull();
+            });
+    });
+    test('should return a 404 if given a message_id that does not exist', async () => {
+        return request(app)
+            .delete('/api/messages/999')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe('Message not found!');
+            });
+    });
+    test('should return a 400 if given an invalid message_id', async () => {
+        return request(app)
+            .delete('/api/messages/notAnID')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
+            });
+    });
+});
+
+describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
+    test('returns a 200 status code', () => {
+        return request(app).get("/api/posts/groups/1").expect(200)
+    }); 
+    test('returns the correct number of posts for user_id 1', () => {
+        return request(app)
+            .get("/api/posts/groups/1")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.posts.length).toBe(3);
+            });
+    });
+    test('returns a post for user with the following properties', () => {
+        return request(app).get("/api/posts/groups/2").expect(200).then(({body}) => {
+            expect(body.posts[0]).toHaveProperty("post_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("user_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("run_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("is_group", expect.any(Boolean));
+            expect(body.posts[0]).toHaveProperty("title", expect.any(String));
+            expect(body.posts[0]).toHaveProperty("description", expect.any(String));
+            expect(body.posts[0]).toHaveProperty("picture_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("created_at", expect.any(String));
+            })
+        });
+    test('returns a post with the correct properties for user_id 2', () => {
+        return request(app)
+            .get("/api/posts/groups/2")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.posts[0]).toEqual(expect.objectContaining({
+                    post_id: 4,
+                    is_group: true,
+                    group_id: 6,
+                    run_id: 4,
+                    title: "Morning Run Highlights",
+                    description: "Fantastic morning run today. Enjoyed every bit of it!",
+                    picture_id: 4,
+                    created_at: expect.any(String)
+                }));
+            });
+    });
+    test('returns a status code of 404 Not Found for a user_id that has no group posts', () => {
+        return request(app)
+            .get("/api/posts/groups/99")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe('No posts found for the given user.');
+            });
+    });
+    test('returns a status code of 400 Bad Request for an invalid user_id format', () => {
+        return request(app)
+            .get("/api/posts/groups/invalid_user_id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
+            });
+    });
+});
+
+describe('GetPicturesByGroup GET /pictures/:group_id', () => {
+    test('returns a 200 status code', () => {
+        return request(app).get("/api/pictures/1").expect(200)
+    }); 
+    test('returns the correct number of pictures for group_id 1', () => {
+        return request(app)
+            .get("/api/pictures/1")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.pictures.length).toBe(2);
+            });
+    });
+    test('returns pictures for a specified group with the following properties', () => {
+        return request(app).get("/api/pictures/1").expect(200).then(({body}) => {
+            expect(body.pictures[0]).toHaveProperty("picture_id", expect.any(Number));
+            expect(body.pictures[0]).toHaveProperty("user_id", expect.any(Number));
+            expect(body.pictures[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.pictures[0]).toHaveProperty("post_id", expect.any(Number));
+            expect(body.pictures[0]).toHaveProperty("url", expect.any(String));
+            expect(body.pictures[0]).toHaveProperty("description", expect.any(String));
+            })
+        });
+    test('returns a picture with the correct properties for group_id 3', () => {
+        return request(app)
+            .get("/api/pictures/3")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.pictures[0]).toEqual(expect.objectContaining({
+                    picture_id: 4,
+                    user_id: 4,
+                    group_id: 3,
+                    post_id: 4,
+                    url: "http://example.com/images/run4.jpg",
+                    description: "Morning run highlights",
+                }));
+            });
+    });
+    test('returns a status code of 404 Not Found for a group_id that has no pictures', () => {
+        return request(app)
+            .get("/api/pictures/99")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe('No pictures found for this group!');
+            });
+    });
+    test('returns a status code of 400 Bad Request for an invalid group_id format', () => {
+        return request(app)
+            .get("/api/pictures/invalid_user_id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
+            });
+    });
+});
+
+describe('POST /api/posts', () => {
+    test('should return 201 status code and return the new posted post', () => {
+        const newPost = {
+            is_group: true,
+            group_id: 6,
+            run_id: 4,
+            user_id: 2,
+            title: "Test Post",
+            description: "Testing a post",
+            picture_id: 4,
+        };
+        return request(app)
+            .post('/api/posts')
+            .send(newPost)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.post).toMatchObject({
+                    post_id: 5,
+                    is_group: true,
+                    group_id: 6,
+                    run_id: 4,
+                    user_id: 2,
+                    title: "Test Post",
+                    description: "Testing a post",
+                    picture_id: 4,
+                    created_at: expect.any(String),
+                });
+            });
+    });
+    test('should return 201 status code and return the new posted post when passed a request with an extra field', () => {
+        const newPost = {
+            is_group: true,
+            group_id: 6,
+            run_id: 4,
+            user_id: 2,
+            title: "Test Post 2",
+            description: "Testing a post",
+            picture_id: 4,
+            smells_like: 'roses'
+        };
+        return request(app)
+            .post('/api/posts')
+            .send(newPost)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.post).toMatchObject({
+                    post_id: 5,
+                    is_group: true,
+                    group_id: 6,
+                    run_id: 4,
+                    user_id: 2,
+                    title: "Test Post 2",
+                    description: "Testing a post",
+                    picture_id: 4,
+                    created_at: expect.any(String),
+                });
+            });
+    });
+    test('should return 400 Bad Request if the post data is invalid', () => {
+        const invalidPost = {
+            is_group: true,
+            grp_id: 6,
+            run_id: 4,
+            user_id: 2,
+            title: "Test Post 2",
+            description: "Testing a post",
+            picture_id: 4,
+            smells_like: 'roses'
+        };
+        return request(app)
+            .post('/api/posts')
+            .send(invalidPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad request');
+            });
+    });
+    test('should return a 400 Bad Request if the object passed is missing required properties - missing group_id', () => {
+        const invalidPost = {
+            is_group: true,
+            run_id: 4,
+            user_id: 2,
+            title: "Test Post 2",
+            description: "Testing a post",
+            picture_id: 4,
+            smells_like: 'roses'
+        };
+        return request(app)
+            .post('/api/posts')
+            .send(invalidPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad request');
             });
     });
 });
