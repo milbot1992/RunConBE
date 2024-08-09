@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env file
-const ENV = process.env.NODE_ENV || 'development';
-console.log('ENV:', ENV);
+const ENV = process.env.NODE_ENV || 'production';
+
 dotenv.config({
   path: `${__dirname}/.env.${ENV}`
 });
