@@ -211,9 +211,9 @@ function seedData({ groupData, userData, usersRunningGroupsData, runData, routeD
             RouteWaypointsTableModel.insertMany(routeWaypointsWithIds),
             ChatsModel.insertMany(chatsWithIds),
             ChatParticipantsModel.insertMany(chatParticipantsWithIds),
-            MessagesModel.collection.insertMany(messagesWithIds),
-            PostsModel.collection.insertMany(postsWithIds),
-            PicturesModel.collection.insertMany(picturesWithIds)
+            MessagesModel.insertMany(messagesWithIds),
+            PostsModel.insertMany(postsWithIds),
+            PicturesModel.insertMany(picturesWithIds)
         ])
         .then(() => console.log('Data seeded successfully'))
         .catch((err) => console.error('Error seeding data:', err));

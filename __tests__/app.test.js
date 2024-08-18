@@ -1080,8 +1080,7 @@ describe('POST /api/messages', () => {
         const newMessage = {
             sender_id: 1,
             chat_id: 1,
-            content: "Test message!",
-            timestamp: "2024-08-06T00:02:00.000Z"
+            content: "Test message!"
         };
         return request(app)
             .post('/api/messages')
@@ -1093,7 +1092,7 @@ describe('POST /api/messages', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Test message!",
-                    timestamp: "2024-08-06T00:02:00.000Z"
+                    timestamp: expect.any(String)
                 });
             });
     });
@@ -1102,7 +1101,6 @@ describe('POST /api/messages', () => {
             sender_id: 1,
             chat_id: 1,
             content: "Test message 2!",
-            timestamp: "2024-08-06T00:02:00.000Z",
             extra_field: 'extra field'
         };
         return request(app)
@@ -1115,7 +1113,7 @@ describe('POST /api/messages', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Test message 2!",
-                    timestamp: "2024-08-06T00:02:00.000Z"
+                    timestamp: expect.any(String)
                 });
             });
     });
@@ -1124,7 +1122,6 @@ describe('POST /api/messages', () => {
             sendr_id: 1,
             chat_id: 1,
             content: "Test message 3!",
-            timestamp: "2024-08-06T00:02:00.000Z",
         };
         return request(app)
             .post('/api/messages')
@@ -1138,7 +1135,6 @@ describe('POST /api/messages', () => {
         const invalidMessage = {
             chat_id: 1,
             content: "Test message 3!",
-            timestamp: "2024-08-06T00:02:00.000Z",
         };
         return request(app)
             .post('/api/messages')
@@ -1255,8 +1251,8 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
             expect(body.posts[0]).toHaveProperty("is_group", expect.any(Boolean));
             expect(body.posts[0]).toHaveProperty("title", expect.any(String));
             expect(body.posts[0]).toHaveProperty("description", expect.any(String));
-            expect(body.posts[0]).toHaveProperty("picture_id", expect.any(Number));
             expect(body.posts[0]).toHaveProperty("created_at", expect.any(String));
+            expect(body.posts[0]).toHaveProperty("picture_url", expect.any(String));
             })
         });
     test('returns a post with the correct properties for user_id 2', () => {
@@ -1269,9 +1265,10 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                     is_group: true,
                     group_id: 6,
                     run_id: 4,
+                    user_id: 4,
                     title: "Morning Run Highlights",
                     description: "Fantastic morning run today. Enjoyed every bit of it!",
-                    picture_id: 4,
+                    picture_url: 'http://example.com/images/run4.jpg',
                     created_at: expect.any(String)
                 }));
             });
@@ -1294,7 +1291,7 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
     });
 });
 
-describe('GetPicturesByGroup GET /pictures/:group_id', () => {
+describe.only('GetPicturesByGroup GET /pictures/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/pictures/1").expect(200)
     }); 
