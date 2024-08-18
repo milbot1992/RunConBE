@@ -1291,7 +1291,7 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
     });
 });
 
-describe.only('GetPicturesByGroup GET /pictures/:group_id', () => {
+describe('GetPicturesByGroup GET /pictures/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/pictures/1").expect(200)
     }); 

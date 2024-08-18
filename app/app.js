@@ -1,8 +1,12 @@
 const express = require("express")
+const cors = require('cors');
 
 const { handleMongoErrors, handleErrors } = require("./error-handler");
 
 const app = express()
+// Use CORS middleware
+app.use(cors());
+
 app.use(express.json())
 
 const apiRouter = require('./routes/api-router');
