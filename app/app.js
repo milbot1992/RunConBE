@@ -5,7 +5,9 @@ const { handleMongoErrors, handleErrors } = require("./error-handler");
 
 const app = express()
 // Use CORS middleware
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins - for now, change to front end domain upon production
+  }));
 
 app.use(express.json())
 
