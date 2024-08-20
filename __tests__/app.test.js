@@ -79,10 +79,29 @@ describe('GetGroupById GET /api/groups/group/:group_id', () => {
     test('returns a group by the id with the following properties', () => {
         return request(app).get("/api/groups/group/2").expect(200).then(({body}) => {
             expect(body.group).toHaveProperty("group_id", expect.any(Number));
+            expect(body.group).toHaveProperty("distance_from_user_km", expect.any(Number));
+            expect(body.group).toHaveProperty("location", expect.any(Array));
             expect(body.group).toHaveProperty("group_name", expect.any(String));
             expect(body.group).toHaveProperty("description", expect.any(String));
+            expect(body.group).toHaveProperty("created_at", expect.any(String));
             })
         });
+    test('returns a group with the correct properties for user_id 2', () => {
+        return request(app)
+            .get("/api/groups/group/2")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.group).toEqual(expect.objectContaining({
+                    group_id: 2,
+                    group_name: "test2",
+                    picture_url: "exampleurl2",
+                    distance_from_user_km: 2,
+                    description: "second running group for testing",
+                    location: [53.515024, -2.074472],
+                    created_at: expect.any(String)
+                }));
+            });
+    });
     test("should return a status code of 404 Not Found for a group_id that does not exist", () => {
         return request(app)
             .get("/api/groups/group/99")
@@ -1351,7 +1370,7 @@ describe('GetPicturesByGroup GET /pictures/:group_id', () => {
     });
 });
 
-describe.only('POST /api/posts', () => {
+describe('POST /api/posts', () => {
     test('should return 201 status code and return the new posted post', () => {
         const newPost = {
             is_group: true,
