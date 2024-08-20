@@ -1243,9 +1243,8 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                 expect(body.posts.length).toBe(3);
             });
     });
-    test.only('returns a post for user with the following properties', () => {
+    test('returns a post for user with the following properties', () => {
         return request(app).get("/api/posts/groups/2").expect(200).then(({body}) => {
-            console.log(body.posts[0]);
             expect(body.posts[0]).toHaveProperty("post_id", expect.any(Number));
             expect(body.posts[0]).toHaveProperty("user_id", expect.any(Number));
             expect(body.posts[0]).toHaveProperty("username", expect.any(String));
@@ -1257,6 +1256,7 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
             expect(body.posts[0]).toHaveProperty("description", expect.any(String));
             expect(body.posts[0]).toHaveProperty("created_at", expect.any(String));
             expect(body.posts[0]).toHaveProperty("picture_url", expect.any(String));
+            expect(body.posts[0]).toHaveProperty("user_url", expect.any(String));
             })
         });
     test('returns a post with the correct properties for user_id 2', () => {
@@ -1275,6 +1275,7 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                     title: "Morning Run Highlights",
                     description: "Fantastic morning run today. Enjoyed every bit of it!",
                     picture_url: "https://images.unsplash.com/photo-1543051932-6ef9fecfbc80?q=80&w=1448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    user_url: "exampleimageurl4",
                     created_at: expect.any(String)
                 }));
             });
@@ -1350,7 +1351,7 @@ describe('GetPicturesByGroup GET /pictures/:group_id', () => {
     });
 });
 
-describe('POST /api/posts', () => {
+describe.only('POST /api/posts', () => {
     test('should return 201 status code and return the new posted post', () => {
         const newPost = {
             is_group: true,
