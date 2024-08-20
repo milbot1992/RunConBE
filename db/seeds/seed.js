@@ -6,7 +6,8 @@ const groupSchema = new mongoose.Schema({
     group_id: { type: Number, required: true, unique: true },
     created_at: { type: Date, default: Date.now },
     group_name: { type: String, required: true}, 
-    description: String
+    description: String,
+    picture_url: String,
 }, { versionKey: false });
 
 const GroupModel = mongoose.model("Group", groupSchema);
@@ -22,7 +23,8 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, required: true },
     single_open: { type: Boolean, required: true },
     connect_open: { type: Boolean, required: true },
-    open_to_gender: { type: String, required: true }
+    open_to_gender: { type: String, required: true },
+    picture_url: String,
 }, { versionKey: false });
 
 const UserModel = mongoose.model("User", userSchema);
@@ -113,12 +115,14 @@ const PostsSchema = new mongoose.Schema({
     post_id: { type: Number, required: true, unique: true },
     is_group: { type: Boolean, required: true },
     user_id: { type: Number, required: true, ref: 'User' },
+    username: { type: String, required: true }, // Denormalised field
     group_id: { type: Number, required: true, ref: 'Group' },
+    group_name: { type: String, required: true }, // Denormalised field
     run_id: { type: Number, required: true, ref: 'Run' },
     created_at: { type: Date, default: Date.now },
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    picture_id: { type: Number, required: false, ref: 'Picture' },
+    description: String,
+    picture_url: { type: String, required: true },
 }, { versionKey: false });
 
 const PostsModel = mongoose.model("Post", PostsSchema);
@@ -128,7 +132,6 @@ const PicturesSchema = new mongoose.Schema({
     picture_id: { type: Number, required: true, unique: true },
     user_id: { type: Number, required: true, ref: 'User' },
     group_id: { type: Number, required: true, ref: 'Group' },
-    post_id: { type: Number, required: true, ref: 'Post' },
     url: { type: String, required: true },
     description: { type: String, required: false },
 }, { versionKey: false });

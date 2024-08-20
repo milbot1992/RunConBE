@@ -6,7 +6,8 @@ module.exports = [
         "gender": "female",
         "single_open": true,
         "connect_open": true,
-        "open_to_gender": "male"
+        "open_to_gender": "male",
+        "picture_url": "exampleimageurl1"
     },
     {
         "username": "user2",
@@ -15,7 +16,8 @@ module.exports = [
         "gender": "male",
         "single_open": false,
         "connect_open": true,
-        "open_to_gender": "female"
+        "open_to_gender": "female",
+        "picture_url": "exampleimageurl2"
     },
     {
         "username": "user3",
@@ -24,7 +26,8 @@ module.exports = [
         "gender": "female",
         "single_open": true,
         "connect_open": false,
-        "open_to_gender": "any"
+        "open_to_gender": "any",
+        "picture_url": "exampleimageurl3"
     },
     {
         "username": "user4",
@@ -33,7 +36,8 @@ module.exports = [
         "gender": "male",
         "single_open": false,
         "connect_open": true,
-        "open_to_gender": "female"
+        "open_to_gender": "female",
+        "picture_url": "exampleimageurl4"
     },
     {
         "username": "user5",
@@ -42,7 +46,8 @@ module.exports = [
         "gender": "female",
         "single_open": true,
         "connect_open": true,
-        "open_to_gender": "male"
+        "open_to_gender": "male",
+        "picture_url": "exampleimageurl5"
     },
     {
         "username": "user6",
@@ -51,6 +56,7 @@ module.exports = [
         "gender": "male",
         "single_open": false,
         "connect_open": false,
-        "open_to_gender": "any"
+        "open_to_gender": "any",
+        "picture_url": "exampleimageurl6"
     }
 ]

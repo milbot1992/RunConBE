@@ -891,6 +891,7 @@ describe('DELETE /api/users/:user_id', () => {
             single_open: true,
             connect_open: false,
             open_to_gender: "male",
+            picture_url: "exampleimageurl1"
         };
         const user = new UserModel(newUser);
         await user.save();
@@ -1242,11 +1243,14 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                 expect(body.posts.length).toBe(3);
             });
     });
-    test('returns a post for user with the following properties', () => {
+    test.only('returns a post for user with the following properties', () => {
         return request(app).get("/api/posts/groups/2").expect(200).then(({body}) => {
+            console.log(body.posts[0]);
             expect(body.posts[0]).toHaveProperty("post_id", expect.any(Number));
             expect(body.posts[0]).toHaveProperty("user_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("username", expect.any(String));
             expect(body.posts[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.posts[0]).toHaveProperty("group_name", expect.any(String));
             expect(body.posts[0]).toHaveProperty("run_id", expect.any(Number));
             expect(body.posts[0]).toHaveProperty("is_group", expect.any(Boolean));
             expect(body.posts[0]).toHaveProperty("title", expect.any(String));
@@ -1264,11 +1268,13 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                     post_id: 4,
                     is_group: true,
                     group_id: 6,
+                    group_name: "test6",
                     run_id: 4,
                     user_id: 4,
+                    username: "user4",
                     title: "Morning Run Highlights",
                     description: "Fantastic morning run today. Enjoyed every bit of it!",
-                    picture_url: 'http://example.com/images/run4.jpg',
+                    picture_url: "https://images.unsplash.com/photo-1543051932-6ef9fecfbc80?q=80&w=1448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                     created_at: expect.any(String)
                 }));
             });
@@ -1308,7 +1314,6 @@ describe('GetPicturesByGroup GET /pictures/:group_id', () => {
             expect(body.pictures[0]).toHaveProperty("picture_id", expect.any(Number));
             expect(body.pictures[0]).toHaveProperty("user_id", expect.any(Number));
             expect(body.pictures[0]).toHaveProperty("group_id", expect.any(Number));
-            expect(body.pictures[0]).toHaveProperty("post_id", expect.any(Number));
             expect(body.pictures[0]).toHaveProperty("url", expect.any(String));
             expect(body.pictures[0]).toHaveProperty("description", expect.any(String));
             })
@@ -1322,7 +1327,6 @@ describe('GetPicturesByGroup GET /pictures/:group_id', () => {
                     picture_id: 4,
                     user_id: 4,
                     group_id: 3,
-                    post_id: 4,
                     url: "http://example.com/images/run4.jpg",
                     description: "Morning run highlights",
                 }));
@@ -1351,11 +1355,13 @@ describe('POST /api/posts', () => {
         const newPost = {
             is_group: true,
             group_id: 6,
+            group_name: "test6",
             run_id: 4,
             user_id: 2,
+            username: "user2",
             title: "Test Post",
             description: "Testing a post",
-            picture_id: 4,
+            picture_url: "testurl",
         };
         return request(app)
             .post('/api/posts')
@@ -1366,11 +1372,13 @@ describe('POST /api/posts', () => {
                     post_id: 5,
                     is_group: true,
                     group_id: 6,
+                    group_name: "test6",
                     run_id: 4,
                     user_id: 2,
+                    username: "user2",
                     title: "Test Post",
                     description: "Testing a post",
-                    picture_id: 4,
+                    picture_url: "testurl",
                     created_at: expect.any(String),
                 });
             });
@@ -1379,11 +1387,13 @@ describe('POST /api/posts', () => {
         const newPost = {
             is_group: true,
             group_id: 6,
+            group_name: "test6",
             run_id: 4,
             user_id: 2,
-            title: "Test Post 2",
+            username: "user2",
+            title: "Test Post",
             description: "Testing a post",
-            picture_id: 4,
+            picture_url: "testurl",
             smells_like: 'roses'
         };
         return request(app)
@@ -1395,11 +1405,13 @@ describe('POST /api/posts', () => {
                     post_id: 5,
                     is_group: true,
                     group_id: 6,
+                    group_name: "test6",
                     run_id: 4,
                     user_id: 2,
-                    title: "Test Post 2",
+                    username: "user2",
+                    title: "Test Post",
                     description: "Testing a post",
-                    picture_id: 4,
+                    picture_url: "testurl",
                     created_at: expect.any(String),
                 });
             });

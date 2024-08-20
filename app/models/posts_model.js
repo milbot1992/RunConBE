@@ -1,8 +1,9 @@
-const {UsersRunningGroupsModel, PostsModel, PicturesModel} = require("../../db/seeds/seed")
+const {UsersRunningGroupsModel, PostsModel} = require("../../db/seeds/seed")
 
 exports.fetchPostsForUserGroups = async (user_id) => {
+    console.log('user_id:', user_id);
     try {
-        // Find all user groups for the given user
+        // Find all user groups
         const userGroups = await UsersRunningGroupsModel.find({ user_id }).exec();
 
         if (userGroups.length === 0) {
@@ -11,56 +12,21 @@ exports.fetchPostsForUserGroups = async (user_id) => {
 
         // Extract group_ids
         const groupIds = userGroups.map(entry => entry.group_id);
+        console.log('group_ids:', groupIds);
+        // Find all posts with the extracted group_ids
+        const posts = await PostsModel.find({ group_id: { $in: groupIds } }).exec();
 
-        // Aggregation pipeline to fetch posts and join with pictures
-        const postsWithPictures = await PostsModel.aggregate([
-            // Match posts with group_ids from user groups
-            {
-                $match: {
-                    group_id: { $in: groupIds }
-                }
-
-            },
-            // Lookup to join with PicturesModel
-            {
-                $lookup: {
-                    from: 'pictures', // The collection name for PicturesModel
-                    localField: 'picture_id', // Field in PostsModel
-                    foreignField: 'picture_id', // Field in PicturesModel
-                    as: 'pictureDetails' // Alias for the joined data
-                }
-            },
-            // Unwind the pictureDetails array
-            {
-                $unwind: {
-                    path: '$pictureDetails',
-                    preserveNullAndEmptyArrays: true // Allows posts without pictures
-                }
-            },
-            // Add picture_url field to posts
-            {
-                $addFields: {
-                    picture_url: '$pictureDetails.url'
-                }
-            },
-            {
-                $project: {
-                    pictureDetails: 0,
-                    picture_id: 0
-                }
-            }
-        ]);
-
-        if (postsWithPictures.length === 0) {
+        if (posts.length === 0) {
             return Promise.reject({ status: 404, message: 'No posts found for the given user.' });
         }
 
-        return postsWithPictures;
+        return posts;
     } catch (err) {
         console.error('Error fetching posts for user groups:', err);
         throw err;
     }
 };
+
 
 
 exports.createPost = async (newPost) => {
