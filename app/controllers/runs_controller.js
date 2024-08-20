@@ -2,20 +2,21 @@ const { fetchRunsByGroup, fetchRunsById, fetchRunsByUserId, createRun, updateRun
 const moment = require('moment');
 
 exports.getRunsByGroup = (req, res, next) => {
-    const {group_id} = req.params
+    const { group_id } = req.params;
+    const { future_runs } = req.query; // Fetch future_runs value from query parameters
 
     // Validate group_id before database call
     if (isNaN(group_id)) {
         return res.status(400).send({ message: 'Bad Request' });
     }
     
-    fetchRunsByGroup(group_id).then((runs) => {
-        res.status(200).send({ runs })
+    fetchRunsByGroup(group_id, future_runs).then((runs) => {
+        res.status(200).send({ runs });
     })
     .catch((err) => {
-        next(err)
-    })
-}
+        next(err);
+    });
+};
 
 exports.getRunById = (req, res, next) => {
     const {run_id} = req.params

@@ -1,11 +1,20 @@
 const {RunModel, RouteModel, RouteWaypointsTableModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
 
-exports.fetchRunsByGroup = async (group_id) => {
+exports.fetchRunsByGroup = async (group_id, future_runs) => {
     try {
+        // Define the date criteria based on future_runs
+        const now = new Date();
+        const dateFilter = future_runs === 'y'
+            ? { date: { $gte: now } }
+            : { date: { $lt: now } };
+
         // Aggregate the data by finding runs with the given group_id
         const runs = await RunModel.aggregate([
             {
-                $match: { group_id: Number(group_id) }
+                $match: { 
+                    group_id: Number(group_id),
+                    ...dateFilter // Apply the date filter
+                }
             },
             {
                 $project: {
@@ -24,6 +33,7 @@ exports.fetchRunsByGroup = async (group_id) => {
         if (runs.length === 0) {
             return Promise.reject({ status: 404, message: 'No runs found for this group!' });
         }
+
         return runs;
     } catch (err) {
         console.error('Error fetching runs by group:', err);

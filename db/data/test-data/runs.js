@@ -22,7 +22,7 @@ module.exports = [
     },
     {
         group_id: 2,
-        date: new Date('2024-09-02'), 
+        date: new Date('2023-09-02'), 
         time: "09:00", 
         meeting_point: 'River Bank Start',
         distance: 7,
