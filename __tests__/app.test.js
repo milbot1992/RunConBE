@@ -407,6 +407,7 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
             expect(body.runs[0]).toHaveProperty("distance", expect.any(Number));
             expect(body.runs[0]).toHaveProperty("distance_unit", expect.any(String));
             expect(body.runs[0]).toHaveProperty("route_id", expect.any(Number));
+            expect(body.runs[0]).toHaveProperty("location", expect.any(Array));
         });
     });
     test('returns a run with the correct properties for user_id 1', () => {
@@ -423,6 +424,7 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
                     distance: 5,
                     distance_unit: "km",
                     route_id: 1,
+                    location: [53.474524, -2.242604]
                 }));
             });
     });
@@ -612,6 +614,7 @@ describe('POST /api/runs', () => {
             distance: 5,
             distance_unit: "km",
             route_id: 2,
+            location: [53.474524, -2.242604]
         };
         return request(app)
             .post('/api/runs')
@@ -627,6 +630,7 @@ describe('POST /api/runs', () => {
                     distance: 5,
                     distance_unit: "km",
                     route_id: 2,
+                    location: [53.474524, -2.242604]
                 });
             });
     });
@@ -639,6 +643,7 @@ describe('POST /api/runs', () => {
             distance: 5,
             distance_unit: "km",
             route_id: 3,
+            location: [53.474524, -2.242604],
             difficulty: "extreme"
         };
         return request(app)
@@ -655,6 +660,7 @@ describe('POST /api/runs', () => {
                     distance: 5,
                     distance_unit: "km",
                     route_id: 3,
+                    location: [53.474524, -2.242604]
                 });
             });
     });
@@ -667,6 +673,7 @@ describe('POST /api/runs', () => {
             distance: 5,
             distance_unit: "km",
             route_id: 3,
+            location: [53.474524, -2.242604],
             difficulty: "extreme"
         };
         return request(app)
@@ -685,6 +692,7 @@ describe('POST /api/runs', () => {
             distance: 5,
             distance_unit: "km",
             route_id: 3,
+            location: [53.474524, -2.242604],
             difficulty: "extreme"
         };
         return request(app)
@@ -952,6 +960,7 @@ describe('DELETE /api/runs/:run_id', () => {
             meeting_point: 'Central Plaza Entrance',
             distance: 5,
             distance_unit: "km",
+            location: [53.474524, -2.242604],
             route_id: 2,
         };
         const run = new RunModel(newRun);

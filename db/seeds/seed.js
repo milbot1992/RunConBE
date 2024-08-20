@@ -52,6 +52,10 @@ const runSchema = new mongoose.Schema({
     distance: { type: Number, required: true },
     distance_unit: { type: String, required: true },
     route_id: { type: Number, required: true, ref: 'Route ' },
+    location: {
+        type: [Number],
+        required: true },
+
 }, { versionKey: false });
 
 const RunModel = mongoose.model("Run", runSchema);

@@ -6,7 +6,8 @@ module.exports = [
         meeting_point: 'Central Park Entrance',
         distance: 5,
         distance_unit: "km",
-        route_id: 1
+        route_id: 1,
+        location: [53.515024, -2.074472]
     },
     {
         group_id: 2,
@@ -15,6 +16,7 @@ module.exports = [
         meeting_point: 'River Trail Start',
         distance: 10,
         distance_unit: "km",
-        route_id: 2
+        route_id: 2,
+        location: [53.474524, -2.242604]
     }
 ];

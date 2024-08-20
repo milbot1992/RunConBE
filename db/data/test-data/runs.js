@@ -7,6 +7,7 @@ module.exports = [
         distance: 5,
         distance_unit: "km",
         route_id: 1,
+        location: [53.474524, -2.242604]
     },
     {
         group_id: 2,
@@ -16,6 +17,7 @@ module.exports = [
         distance: 10,
         distance_unit: "km",
         route_id: 2,
+        location: [53.474524, -2.242604]
 
     },
     {
@@ -26,6 +28,7 @@ module.exports = [
         distance: 7,
         distance_unit: "km",
         route_id: 2,
+        location: [53.474524, -2.242604]
 
     },
     {
@@ -36,5 +39,6 @@ module.exports = [
         distance: 15,
         distance_unit: "km",
         route_id: 3,
+        location: [53.474524, -2.242604]
     }
 ];
