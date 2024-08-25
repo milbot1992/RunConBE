@@ -1,4 +1,4 @@
-const { fetchAllGroups, fetchGroupById, fetchGroupsByUserId, createGroup, updateGroupById, removeGroupById } = require("../models/groups_model")
+const { fetchAllGroups, fetchGroupById, fetchGroupsByUserId, fetchGroupsNotInUserGroups, createGroup, updateGroupById, removeGroupById } = require("../models/groups_model")
 
 exports.getAllGroups = (req, res, next) => {
     const { limit, p } = req.query
@@ -37,6 +37,23 @@ exports.getGroupsByUser = (req, res, next) => {
     .catch((err) => {
         next(err);
     });
+};
+
+exports.getGroupsNotInUserGroups = (req, res, next) => {
+    const { user_id } = req.params;
+
+    // Validate user_id before database call
+    if (isNaN(user_id)) {
+        return res.status(400).send({ message: 'Bad Request' });
+    }
+
+    fetchGroupsNotInUserGroups(user_id)
+        .then((groups) => {
+            res.status(200).send({ groups });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 exports.postGroup = (req, res, next) => {

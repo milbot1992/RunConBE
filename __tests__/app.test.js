@@ -1518,3 +1518,46 @@ describe('GetUpcomingRunForGroup GET /runs/upcoming/:group_id', () => {
             });
     });
 });
+
+describe('getGroupsNotInUserGroups GET /groups/usernotin/1', () => {
+    test('returns a 200 status code', () => {
+        return request(app).get("/api/groups/usernotin/1").expect(200)
+    }); 
+    test('returns a group by the id with the following properties', () => {
+        return request(app).get("/api/groups/usernotin/2").expect(200).then(({body}) => {
+            expect(body.groups[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.groups[0]).toHaveProperty("group_name", expect.any(String));
+            expect(body.groups[0]).toHaveProperty("description", expect.any(String));
+            expect(body.groups[0]).toHaveProperty("location", expect.any(Array));
+            expect(body.groups[0]).toHaveProperty("picture_url", expect.any(String));
+            })
+        });
+    test('returns the correct number of groups for user_id 1', () => {
+        return request(app)
+            .get("/api/groups/usernotin/1")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.groups.length).toBe(4);
+            });
+    });
+    test('response for user_id 1 does not include group 1 or group 2', async () => {
+        const response = await request(app)
+            .get("/api/groups/usernotin/1")
+            .expect(200);
+
+        const groups = response.body.groups;
+        const groupIds = groups.map(group => group.group_id);
+
+        // Check that the response does not include group_id 1 or 2
+        expect(groupIds).not.toContain(1);
+        expect(groupIds).not.toContain(2);
+    });
+    test('returns a status code of 400 Bad Request for an invalid user_id format', () => {
+        return request(app)
+            .get("/api/groups/usernotin/invalid_user_id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
+            });
+    });
+});

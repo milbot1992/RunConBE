@@ -65,6 +65,28 @@ exports.fetchGroupsByUserId = async (user_id) => {
     }
 };
 
+exports.fetchGroupsNotInUserGroups = async (user_id) => {
+    try {
+        // Find all user groups
+        const userGroups = await UsersRunningGroupsModel.find({ user_id }).exec();
+        
+        // Extract group_ids
+        const userGroupIds = userGroups.map(entry => entry.group_id);
+
+        // Find all groups that are not part of the user's groups
+        const groups = await GroupModel.find({ group_id: { $nin: userGroupIds } }).exec();
+
+        if (groups.length === 0) {
+            return Promise.reject({ status: 404, message: 'No groups found that the user is not a part of.' });
+        }
+
+        return groups;
+    } catch (err) {
+        console.error('Error fetching groups not in user groups:', err);
+        throw err;
+    }
+};
+
 exports.createGroup = async (newGroup) => {
     try {
         // Fetch the latest group_id
