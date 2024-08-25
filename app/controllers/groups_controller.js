@@ -51,6 +51,7 @@ exports.postGroup = (req, res, next) => {
         });
 };
 
+
 exports.patchGroup = (req, res, next) => {
     const { group_id } = req.params;
     const updates = req.body;

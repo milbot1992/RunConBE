@@ -40,5 +40,15 @@ module.exports = [
         distance_unit: "km",
         route_id: 3,
         location: [53.474524, -2.242604]
+    },
+    {
+        group_id: 5,
+        date: new Date('2025-08-03'), 
+        time: "10:00", 
+        meeting_point: 'City Park',
+        distance: 15,
+        distance_unit: "km",
+        route_id: 3,
+        location: [53.474524, -2.242604]
     }
 ];

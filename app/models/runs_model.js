@@ -127,6 +127,36 @@ exports.fetchRunsByUserId = async (user_id) => {
     }
 };
 
+exports.fetchUpcomingRunForGroup = async (group_id) => {
+    try {
+        // Fetch all runs for the given group
+        const runs = await RunModel.find({ group_id }).exec();
+
+        // Get today's date
+        const today = new Date();
+
+        // Filter runs to include only those after today
+        const upcomingRuns = runs.filter(run => new Date(run.date) > today);
+
+        // Sort upcoming runs by date
+        const sortedUpcomingRuns = upcomingRuns.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Return the earliest upcoming run
+        if (sortedUpcomingRuns.length > 0) {
+            return new Date(sortedUpcomingRuns[0].date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        } else {
+            return "No upcoming runs yet";
+        }
+    } catch (err) {
+        console.error('Error fetching upcoming run for group:', err);
+        throw err;
+    }
+};
+
 exports.createRun = async (newRun) => {
     try {
         // Fetch the latest user_id

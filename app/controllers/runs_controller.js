@@ -1,4 +1,4 @@
-const { fetchRunsByGroup, fetchRunsById, fetchRunsByUserId, createRun, updateRunById, removeRunById } = require("../models/runs_model")
+const { fetchRunsByGroup, fetchRunsById, fetchRunsByUserId, fetchUpcomingRunForGroup, createRun, updateRunById, removeRunById } = require("../models/runs_model")
 const moment = require('moment');
 
 exports.getRunsByGroup = (req, res, next) => {
@@ -48,6 +48,22 @@ exports.getRunsByUser = (req, res, next) => {
         next(err);
     });
 };
+
+exports.getUpcomingRunForGroup = (req, res, next) => {
+    const { group_id } = req.params;
+
+    // Validate group_id before database call
+    if (!group_id) {
+        return res.status(400).send({ message: 'Bad Request' });
+    }
+
+    fetchUpcomingRunForGroup(group_id).then((upcomingRun) => {
+        res.status(200).send({ upcomingRun });
+    })
+    .catch((err) => {
+        next(err);
+    });
+}
 
 exports.postRun = (req, res, next) => {
     const newRun = req.body;

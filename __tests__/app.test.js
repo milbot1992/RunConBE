@@ -261,7 +261,7 @@ describe('GetUsersByRun GET /users/run/:run_id', () => {
     });
 });
 
-describe.only('GetRunsByGroup GET /runs/group/:group_id', () => {
+describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/runs/group/1").expect(200)
     }); 
@@ -1488,6 +1488,33 @@ describe('POST /api/posts', () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body.message).toBe('Bad request');
+            });
+    });
+});
+
+describe('GetUpcomingRunForGroup GET /runs/upcoming/:group_id', () => {
+    test('returns a 200 status code', () => {
+        return request(app).get("/api/runs/upcoming/1").expect(200)
+    }); 
+    test('returns the correct upcoming run date for group_id 5', () => {
+        return request(app).get("/api/runs/upcoming/5").expect(200).then(({body}) => {
+            expect(body.upcomingRun).toBe("August 3, 2025");
+            })
+        });
+    test('returns No upcoming runs yet for a group that has no upcoming runs', () => {
+        return request(app)
+            .get("/api/runs/upcoming/1")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.upcomingRun).toBe('No upcoming runs yet');
+            });
+    });
+    test('returns a status code of 400 Bad Request for an invalid group_id format', () => {
+        return request(app)
+            .get("/api/runs/upcoming/invalid_group_id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
             });
     });
 });
