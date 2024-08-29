@@ -30,10 +30,6 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
             }
         ]);
 
-        if (runs.length === 0) {
-            return Promise.reject({ status: 404, message: 'No runs found for this group!' });
-        }
-
         return runs;
     } catch (err) {
         console.error('Error fetching runs by group:', err);
@@ -116,9 +112,6 @@ exports.fetchRunsByUserId = async (user_id) => {
                 $replaceRoot: { newRoot: '$runDetails' }
             }
         ]);
-        if (runs.length === 0) {
-            return Promise.reject({ status: 404, message: 'No runs found for this user!' });
-        }
 
         return runs;
     } catch (err) {

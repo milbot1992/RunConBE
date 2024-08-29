@@ -72,7 +72,7 @@ describe('GetUserById GET /api/users/user/:user_id', () => {
     });
 });
 
-describe.only('GetGroupById GET /api/groups/group/:group_id', () => {
+describe('GetGroupById GET /api/groups/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/groups/group/1").expect(200)
     }); 
@@ -112,7 +112,7 @@ describe.only('GetGroupById GET /api/groups/group/:group_id', () => {
     });
 });
 
-describe.only('GetGroupsByUser GET /groups/user/:user_id', () => {
+describe('GetGroupsByUser GET /groups/user/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/groups/user/1").expect(200)
     }); 
@@ -269,16 +269,16 @@ describe('GetUsersByRun GET /users/run/:run_id', () => {
     });
 });
 
-describe('GetRunsByGroup GET /runs/group/:group_id', () => {
+describe.only('GetRunsByGroup GET /runs/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/runs/group/1").expect(200)
     }); 
     test('returns the correct number of runs for group_id 2 future runs', () => {
         return request(app)
             .get("/api/runs/group/2?future_runs=y")
-            .expect(404)
+            .expect(200)
             .then(({ body }) => {
-                expect(body.message).toBe('No runs found for this group!');
+                expect(body.runs.length).toBe(0);
             });
     });
     test('returns the correct number of runs for group_id 2 past runs', () => {
@@ -287,6 +287,14 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs.length).toBe(2);
+            });
+    });
+    test('returns the correct number of runs for group_id 4 past runs', () => {
+        return request(app)
+            .get("/api/runs/group/4?future_runs=n")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.runs.length).toBe(0);
             });
     });
     test('returns runs for a specified group with the following properties', () => {
@@ -317,12 +325,12 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
                 }));
             });
     });
-    test('returns a status code of 404 Not Found for a group that has no runs', () => {
+    test('returns an empty array for a group that has no runs', () => {
         return request(app)
             .get("/api/runs/group/99")
-            .expect(404)
+            .expect(200)
             .then(({ body }) => {
-                expect(body.message).toBe('No runs found for this group!');
+                expect(body.runs.length).toBe(0);
             });
     });
     test('returns a status code of 400 Bad Request for an invalid group_id format', () => {
@@ -444,12 +452,12 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
                 }));
             });
     });
-    test('returns a status code of 404 Not Found for a user_id that has no runs', () => {
+    test('returns runs length 0 for a user_id that has no runs', () => {
         return request(app)
             .get("/api/runs/user/99")
-            .expect(404)
+            .expect(200)
             .then(({ body }) => {
-                expect(body.message).toBe('No runs found for this user!');
+                expect(body.runs.length).toBe(0);
             });
     });
     test('returns a status code of 400 Bad Request for an invalid user_id format', () => {
