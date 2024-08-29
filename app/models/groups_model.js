@@ -27,17 +27,27 @@ exports.fetchAllGroups = async (limit = 10, p = 1) => {
 };
 
 exports.fetchGroupById = (group_id) => {
-
-    return GroupModel.find({group_id})
+    return GroupModel.find({ group_id })
         .then((group) => {
-
             if (group.length === 0) {
                 return Promise.reject({ status: 404, message: 'Group Does Not Exist!' });
             }
 
-            return group[0];
+            // Format the created_at field
+            const formattedCreatedAt = new Date(group[0].created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            // Return the group with the formatted created_at
+            return {
+                ...group[0].toObject(),
+                created_at: formattedCreatedAt,
+            };
         });
 };
+
 
 exports.fetchGroupsByUserId = async (user_id) => {
     try {
