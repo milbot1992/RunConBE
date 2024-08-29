@@ -111,12 +111,23 @@ exports.fetchGroupsNotInUserGroups = async (user_id) => {
             return Promise.reject({ status: 404, message: 'No groups found that the user is not a part of.' });
         }
 
-        return groups;
+        // Reformat created_at field for each group
+        const formattedGroups = groups.map(group => ({
+            ...group.toObject(),
+            created_at: new Date(group.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            })
+        }));
+
+        return formattedGroups;
     } catch (err) {
         console.error('Error fetching groups not in user groups:', err);
         throw err;
     }
 };
+
 
 exports.createGroup = async (newGroup) => {
     try {
