@@ -41,31 +41,30 @@ exports.fetchGroupById = (group_id) => {
 
 exports.fetchGroupsByUserId = async (user_id) => {
     try {
-        // Find all user groups and also retrieve the created_at field
         const userGroups = await UsersRunningGroupsModel.find({ user_id }).exec();
 
         if (userGroups.length === 0) {
             return Promise.reject({ status: 404, message: 'User is not part of any group!' });
         }
 
-        // Extract group_ids and map them with created_at (user_joined_group)
         const groupIdsWithJoinDates = userGroups.map(entry => ({
             group_id: entry.group_id,
-            user_joined_group: entry.created_at // map created_at to user_joined_group
+            user_joined_group: new Date(entry.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }) // Format the created_at date to "August 29, 2024"
         }));
 
         const groupIds = groupIdsWithJoinDates.map(entry => entry.group_id);
 
-        // Find all groups with the extracted group_ids
         const groups = await GroupModel.find({ group_id: { $in: groupIds } }).exec();
 
         if (groups.length === 0) {
             return Promise.reject({ status: 404, message: 'No groups found for the given user.' });
         }
 
-        // Map the groups to include the user_joined_group field
         const groupsWithJoinDates = groups.map(group => {
-            // Find the matching userGroup entry to get user_joined_group
             const groupWithJoinDate = groupIdsWithJoinDates.find(entry => entry.group_id.toString() === group.group_id.toString());
 
             return {
@@ -80,6 +79,7 @@ exports.fetchGroupsByUserId = async (user_id) => {
         throw err;
     }
 };
+
 
 
 exports.fetchGroupsNotInUserGroups = async (user_id) => {
