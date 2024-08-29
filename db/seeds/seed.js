@@ -8,10 +8,10 @@ const groupSchema = new mongoose.Schema({
     group_name: { type: String, required: true}, 
     description: String,
     picture_url: String,
-    distance_from_user_km: Number,
     location: {
         type: [Number],
         required: true },
+    latest_update: String
 }, { versionKey: false });
 
 const GroupModel = mongoose.model("Group", groupSchema);

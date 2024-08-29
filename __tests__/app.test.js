@@ -72,18 +72,18 @@ describe('GetUserById GET /api/users/user/:user_id', () => {
     });
 });
 
-describe('GetGroupById GET /api/groups/group/:group_id', () => {
+describe.only('GetGroupById GET /api/groups/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/groups/group/1").expect(200)
     }); 
     test('returns a group by the id with the following properties', () => {
         return request(app).get("/api/groups/group/2").expect(200).then(({body}) => {
             expect(body.group).toHaveProperty("group_id", expect.any(Number));
-            expect(body.group).toHaveProperty("distance_from_user_km", expect.any(Number));
             expect(body.group).toHaveProperty("location", expect.any(Array));
             expect(body.group).toHaveProperty("group_name", expect.any(String));
             expect(body.group).toHaveProperty("description", expect.any(String));
             expect(body.group).toHaveProperty("created_at", expect.any(String));
+            expect(body.group).toHaveProperty("latest_update", expect.any(String));
             })
         });
     test('returns a group with the correct properties for user_id 2', () => {
@@ -95,10 +95,10 @@ describe('GetGroupById GET /api/groups/group/:group_id', () => {
                     group_id: 2,
                     group_name: "test2",
                     picture_url: "exampleurl2",
-                    distance_from_user_km: 2,
                     description: "second running group for testing",
                     location: [53.515024, -2.074472],
-                    created_at: expect.any(String)
+                    created_at: expect.any(String),
+                    latest_update: "Next run on Monday 7th"
                 }));
             });
     });
@@ -112,15 +112,18 @@ describe('GetGroupById GET /api/groups/group/:group_id', () => {
     });
 });
 
-describe('GetGroupsByUser GET /groups/user/:user_id', () => {
+describe.only('GetGroupsByUser GET /groups/user/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/groups/user/1").expect(200)
     }); 
     test('returns a group by the id with the following properties', () => {
         return request(app).get("/api/groups/user/2").expect(200).then(({body}) => {
             expect(body.groups[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.groups[0]).toHaveProperty("location", expect.any(Array));
             expect(body.groups[0]).toHaveProperty("group_name", expect.any(String));
             expect(body.groups[0]).toHaveProperty("description", expect.any(String));
+            expect(body.groups[0]).toHaveProperty("created_at", expect.any(String));
+            expect(body.groups[0]).toHaveProperty("latest_update", expect.any(String));
             })
         });
     test('returns a group with the correct properties for user_id 2', () => {
@@ -131,7 +134,12 @@ describe('GetGroupsByUser GET /groups/user/:user_id', () => {
                 expect(body.groups[0]).toEqual(expect.objectContaining({
                     group_id: 6,
                     group_name: "test6",
-                    description: "sixth running group for testing"
+                    description: "sixth running group for testing",
+                    picture_url: "exampleurl6",
+                    description: "sixth running group for testing",
+                    location: [53.436908, -2.283158],
+                    latest_update: "Next run on Monday 7th"
+                    
                 }));
             });
     });
