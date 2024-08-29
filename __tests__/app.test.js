@@ -124,6 +124,7 @@ describe('GetGroupsByUser GET /groups/user/:user_id', () => {
             expect(body.groups[0]).toHaveProperty("description", expect.any(String));
             expect(body.groups[0]).toHaveProperty("created_at", expect.any(String));
             expect(body.groups[0]).toHaveProperty("latest_update", expect.any(String));
+            expect(body.groups[0]).toHaveProperty("user_joined_group", expect.any(String));
             })
         });
     test('returns a group with the correct properties for user_id 2', () => {
@@ -138,8 +139,9 @@ describe('GetGroupsByUser GET /groups/user/:user_id', () => {
                     picture_url: "exampleurl6",
                     description: "sixth running group for testing",
                     location: [53.436908, -2.283158],
-                    latest_update: "Next run on Monday 7th"
-                    
+                    latest_update: "Next run on Monday 7th",
+                    user_joined_group: expect.any(String),
+                    created_at: expect.any(String)
                 }));
             });
     });
