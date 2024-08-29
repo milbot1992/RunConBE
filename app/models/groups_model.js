@@ -53,7 +53,7 @@ exports.fetchGroupsByUserId = async (user_id) => {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-            }) // Format the created_at date to "August 29, 2024"
+            }) // Format the user_joined_group date
         }));
 
         const groupIds = groupIdsWithJoinDates.map(entry => entry.group_id);
@@ -64,22 +64,26 @@ exports.fetchGroupsByUserId = async (user_id) => {
             return Promise.reject({ status: 404, message: 'No groups found for the given user.' });
         }
 
-        const groupsWithJoinDates = groups.map(group => {
+        const groupsWithJoinAndCreationDates = groups.map(group => {
             const groupWithJoinDate = groupIdsWithJoinDates.find(entry => entry.group_id.toString() === group.group_id.toString());
 
             return {
                 ...group.toObject(),
-                user_joined_group: groupWithJoinDate ? groupWithJoinDate.user_joined_group : null
+                user_joined_group: groupWithJoinDate ? groupWithJoinDate.user_joined_group : null,
+                created_at: new Date(group.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                }) // Format the group's created_at date
             };
         });
 
-        return groupsWithJoinDates;
+        return groupsWithJoinAndCreationDates;
     } catch (err) {
         console.error('Error fetching user groups:', err);
         throw err;
     }
 };
-
 
 
 exports.fetchGroupsNotInUserGroups = async (user_id) => {
