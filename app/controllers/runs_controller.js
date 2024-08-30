@@ -1,4 +1,4 @@
-const { fetchRunsByGroup, fetchRunsById, fetchRunsByUserId, fetchUpcomingRunForGroup, createRun, updateRunById, removeRunById } = require("../models/runs_model")
+const { fetchRunsByGroup, fetchRunsById, fetchRunsByUserId, fetchUpcomingRunForGroup, createRun, createUserAttendingRun, updateRunById, removeRunById, removeUserAttendingRunById } = require("../models/runs_model")
 const moment = require('moment');
 
 exports.getRunsByGroup = (req, res, next) => {
@@ -77,6 +77,18 @@ exports.postRun = (req, res, next) => {
         });
 };
 
+exports.postUserAttendingRun = (req, res, next) => {
+    const newUserRun = req.body;
+
+    createUserAttendingRun(newUserRun)
+        .then((userRun) => {
+            res.status(201).send({ userRun });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
+
 exports.patchRun = (req, res, next) => {
     const { run_id } = req.params;
     const updates = req.body;
@@ -118,6 +130,26 @@ exports.deleteRun = (req, res, next) => {
     removeRunById(run_id)
         .then((deletedRun) => {
             res.status(200).send({ message: 'Run successfully deleted', un: deletedRun });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
+
+exports.deleteUserAttendingRun = (req, res, next) => {
+    const { user_id, run_id } = req.params;
+
+    // Validate user_id and run_id before database call
+    if (isNaN(user_id) || isNaN(run_id)) {
+        return res.status(400).send({ message: 'Bad Request: Invalid user_id or run_id' });
+    }
+
+    removeUserAttendingRunById(user_id, run_id)
+        .then((deletedUserRun) => {
+            if (!deletedUserRun) {
+                return res.status(404).send({ message: 'User or Run not found!' });
+            }
+            res.status(200).send({ message: 'User removed from run successfully', userRun: deletedUserRun });
         })
         .catch((err) => {
             next(err);

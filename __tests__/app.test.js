@@ -271,7 +271,7 @@ describe('GetUsersByRun GET /users/run/:run_id', () => {
     });
 });
 
-describe.only('GetRunsByGroup GET /runs/group/:group_id', () => {
+describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/runs/group/1").expect(200)
     }); 
@@ -1576,6 +1576,119 @@ describe('getGroupsNotInUserGroups GET /groups/usernotin/1', () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body.message).toBe('Bad Request');
+            });
+    });
+});
+
+describe('POST PostUserAttendingRun /api/runs/users', () => {
+    test('should return 201 status code and return the new posted user_id and run_id object', () => {
+        const newUserRun = {
+            user_id: 3,
+            run_id: 1,
+            status: "confirmed"
+        };
+        return request(app)
+            .post('/api/runs/users')
+            .send(newUserRun)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.userRun).toMatchObject({
+                    user_id: 3,
+                    run_id: 1,
+                    status: "confirmed"
+                });
+            });
+    });
+    test('should return 201 status code and return the new posted run when passed a request with an extra field', () => {
+        const newUserRun = {
+            user_id: 3,
+            run_id: 1,
+            status: "confirmed",
+            extra_field: "extra_value"
+        };
+        return request(app)
+            .post('/api/runs/users')
+            .send(newUserRun)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.userRun).toMatchObject({
+                    user_id: 3,
+                    run_id: 1,
+                    status: "confirmed",
+                });
+            });
+    });
+    test('should return 400 Bad Request if the user data is invalid', () => {
+        const invalidUserRun = {
+            usr_id: 3,
+            run_id: 1,
+            status: "confirmed",
+        };
+        return request(app)
+            .post('/api/runs/users')
+            .send(invalidUserRun)
+            .expect(400)
+            .then(({ body }) => {
+                console.log('>>>>', body.userRun);
+                expect(body.message).toBe('Bad request');
+            });
+    });
+    test('should return a 400 Bad Request if the object passed is missing required properties - missing key name', () => {
+        const invalidUserRun = {
+            run_id: 1,
+            status: "confirmed",
+        };
+        return request(app)
+            .post('/api/runs/users')
+            .send(invalidUserRun)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad request');
+            });
+    });
+});
+
+describe('DELETE /api/runs/:run_id/users/:user_id', () => {
+    test('should return a 200 status code and remove the user from the run', async () => {
+        // Create a user attending a run for testing
+        const newUserRun = {
+            user_id: 1,
+            run_id: 3,
+            status: "confirmed"
+        };
+        const userRun = new UsersAttendingRunsModel(newUserRun);
+        await userRun.save();
+
+        return request(app)
+            .delete('/api/runs/3/users/1')
+            .expect(200)
+            .then(async () => {
+                const foundUserRun = await UsersAttendingRunsModel.findOne({ user_id: 1, run_id: 3 });
+                expect(foundUserRun).toBeNull();
+            });
+    });
+    test('should return a 404 if the user or run does not exist', async () => {
+        return request(app)
+            .delete('/api/runs/999/users/123')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe('User or Run not found!');
+            });
+    });
+    test('should return a 400 if given an invalid run_id or user_id', async () => {
+        return request(app)
+            .delete('/api/runs/notAValidID/users/10')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request: Invalid user_id or run_id');
+            });
+    });
+    test('should return a 400 if the user_id is invalid', async () => {
+        return request(app)
+            .delete('/api/runs/5/users/notAValidID')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request: Invalid user_id or run_id');
             });
     });
 });

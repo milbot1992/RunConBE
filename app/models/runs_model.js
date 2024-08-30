@@ -171,6 +171,22 @@ exports.createRun = async (newRun) => {
     }
 };
 
+exports.createUserAttendingRun = async (newUserRun) => {
+    try {
+        // Create the new userRun
+        const userRun = new UsersAttendingRunsModel({
+            ...newUserRun
+        });
+
+        // Save the userRun
+        const savedUserRun = await userRun.save();
+        return savedUserRun;
+    } catch (err) {
+        console.error('Error creating userRun:', err);
+        throw err;
+    }
+};
+
 exports.updateRunById = async (run_id, updates) => {
     try {
         // Find the original run by run_id and convert to plain object
@@ -227,6 +243,22 @@ exports.removeRunById = async (run_id) => {
         return deletedRun;
     } catch (err) {
         console.error('Error deleting run:', err);
+        throw err;
+    }
+};
+
+exports.removeUserAttendingRunById = async (user_id, run_id) => {
+    try {
+        // Find and delete the user attending run by user_id and run_id
+        const deletedUserRun = await UsersAttendingRunsModel.findOneAndDelete({ user_id: Number(user_id), run_id: Number(run_id) });
+
+        if (!deletedUserRun) {
+            throw { status: 404, message: 'User or Run not found!' };
+        }
+
+        return deletedUserRun;
+    } catch (err) {
+        console.error('Error removing user from run:', err);
         throw err;
     }
 };

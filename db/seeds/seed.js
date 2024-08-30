@@ -67,6 +67,9 @@ const usersAttendingRunsSchema = new mongoose.Schema({
     status: { type: String, required: true }
 }, { versionKey: false });
 
+// Create a unique compound index
+usersAttendingRunsSchema.index({ user_id: 1, run_id: 1 }, { unique: true });
+
 const UsersAttendingRunsModel = mongoose.model("UsersAttendingRuns", usersAttendingRunsSchema);
 
 // Route Schema and Model
