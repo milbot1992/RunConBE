@@ -35,13 +35,14 @@ exports.getRunById = (req, res, next) => {
 
 exports.getRunsByUser = (req, res, next) => {
     const { user_id } = req.params;
+    const { future_runs } = req.query;
 
     // Validate user_id before database call
     if (isNaN(user_id)) {
         return res.status(400).send({ message: 'Bad Request' });
     }
 
-    fetchRunsByUserId(user_id).then((runs) => {
+    fetchRunsByUserId(user_id, future_runs).then((runs) => {
         res.status(200).send({ runs });
     })
     .catch((err) => {

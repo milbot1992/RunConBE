@@ -17,11 +17,23 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
                 }
             },
             {
+                $addFields: {
+                    // Format date as "01 August, 2024"
+                    formattedDate: {
+                        $dateToString: {
+                            format: "%d %B, %Y",
+                            date: "$date",
+                            timezone: "UTC"
+                        }
+                    }
+                }
+            },
+            {
                 $project: {
                     run_id: 1,
                     group_id: 1,
-                    date: 1,
-                    time: 1,
+                    date: "$formattedDate", // Use the formatted date
+                    time: 1, // Time remains the same
                     meeting_point: 1,
                     distance: 1,
                     distance_unit: 1,
@@ -36,6 +48,7 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
         throw err;
     }
 };
+
 
 
 exports.fetchRunsById = async (run_id) => {
@@ -90,12 +103,18 @@ exports.fetchRunsById = async (run_id) => {
 };
 
 
-exports.fetchRunsByUserId = async (user_id) => {
+exports.fetchRunsByUserId = async (user_id, future_runs) => {
     try {
-        // Aggregate the data by joining UsersRunningGroupsModel and UserModel on user_id
+        // Define the date criteria based on future_runs
+        const now = new Date();
+        const dateFilter = future_runs === 'y'
+            ? { date: { $gte: now } }
+            : { date: { $lt: now } };
+
+        // Aggregate the data by joining UsersAttendingRunsModel with RunModel
         const runs = await UsersAttendingRunsModel.aggregate([
             {
-                $match: { user_id : Number(user_id) }
+                $match: { user_id: Number(user_id) }
             },
             {
                 $lookup: {
@@ -110,6 +129,34 @@ exports.fetchRunsByUserId = async (user_id) => {
             },
             {
                 $replaceRoot: { newRoot: '$runDetails' }
+            },
+            {
+                $match: dateFilter // Apply the date filter
+            },
+            {
+                $addFields: {
+                    // Format date as "01 August, 2024"
+                    formattedDate: {
+                        $dateToString: {
+                            format: "%d %B, %Y",
+                            date: "$date",
+                            timezone: "UTC"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    run_id: 1,
+                    group_id: 1,
+                    date: "$formattedDate", // Use the formatted date
+                    time: 1, // Time remains the same
+                    meeting_point: 1,
+                    distance: 1,
+                    distance_unit: 1,
+                    route_id: 1,
+                    location: 1
+                }
             }
         ]);
 
@@ -119,6 +166,8 @@ exports.fetchRunsByUserId = async (user_id) => {
         throw err;
     }
 };
+
+
 
 exports.fetchUpcomingRunForGroup = async (group_id) => {
     try {

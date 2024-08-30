@@ -313,12 +313,12 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
         });
     test('returns a run with the correct properties for group_id 1', () => {
         return request(app)
-            .get("/api/runs/group/1")
+            .get("/api/runs/group/1?future_runs=n")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs[0]).toEqual(expect.objectContaining({
                     group_id: 1,
-                    date: "2024-08-01T00:00:00.000Z", 
+                    date: "01 August, 2024", 
                     time: "07:30", 
                     meeting_point: 'Central Park Entrance',
                     distance: 5,
@@ -436,20 +436,38 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
             expect(body.runs[0]).toHaveProperty("location", expect.any(Array));
         });
     });
-    test('returns a run with the correct properties for user_id 1', () => {
+    test('returns a run with the correct properties for user_id 1 for past runs', () => {
         return request(app)
-            .get("/api/runs/user/1")
+            .get("/api/runs/user/1?future_runs=n")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs[0]).toEqual(expect.objectContaining({
                     run_id: 1,
                     group_id: 1,
-                    date: "2024-08-01T00:00:00.000Z", 
+                    date: "01 August, 2024", 
                     time: "07:30", 
                     meeting_point: 'Central Park Entrance',
                     distance: 5,
                     distance_unit: "km",
                     route_id: 1,
+                    location: [53.474524, -2.242604]
+                }));
+            });
+    });
+    test('returns a run with the correct properties for user_id 1 for future runs', () => {
+        return request(app)
+            .get("/api/runs/user/1?future_runs=y")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.runs[0]).toEqual(expect.objectContaining({
+                    run_id: 5,
+                    group_id: 5,
+                    date: "03 August, 2025",
+                    time: "10:00", 
+                    meeting_point: 'City Park',
+                    distance: 15,
+                    distance_unit: "km",
+                    route_id: 3,
                     location: [53.474524, -2.242604]
                 }));
             });
