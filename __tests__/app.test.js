@@ -427,6 +427,7 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
         return request(app).get("/api/runs/user/1").expect(200).then(({ body }) => {
             expect(body.runs[0]).toHaveProperty("run_id", expect.any(Number));
             expect(body.runs[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.runs[0]).toHaveProperty("group_name", expect.any(String));
             expect(body.runs[0]).toHaveProperty("date", expect.any(String));
             expect(body.runs[0]).toHaveProperty("time", expect.any(String));
             expect(body.runs[0]).toHaveProperty("meeting_point", expect.any(String));
@@ -444,6 +445,7 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
                 expect(body.runs[0]).toEqual(expect.objectContaining({
                     run_id: 1,
                     group_id: 1,
+                    group_name: "test1",
                     date: "01 August, 2024", 
                     time: "07:30", 
                     meeting_point: 'Central Park Entrance',
@@ -462,6 +464,7 @@ describe('GetRunsByUser GET /api/runs/user/:user_id', () => {
                 expect(body.runs[0]).toEqual(expect.objectContaining({
                     run_id: 5,
                     group_id: 5,
+                    group_name: "test5",
                     date: "03 August, 2025",
                     time: "10:00", 
                     meeting_point: 'City Park',

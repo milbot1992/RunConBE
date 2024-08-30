@@ -1,4 +1,4 @@
-const {RunModel, RouteModel, RouteWaypointsTableModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
+const {RunModel, GroupModel, RouteModel, RouteWaypointsTableModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
 
 exports.fetchRunsByGroup = async (group_id, future_runs) => {
     try {
@@ -111,7 +111,7 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
             ? { date: { $gte: now } }
             : { date: { $lt: now } };
 
-        // Aggregate the data by joining UsersAttendingRunsModel with RunModel
+        // Aggregate the data by joining UsersAttendingRunsModel with RunModel and GroupModel
         const runs = await UsersAttendingRunsModel.aggregate([
             {
                 $match: { user_id: Number(user_id) }
@@ -134,6 +134,17 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
                 $match: dateFilter // Apply the date filter
             },
             {
+                $lookup: {
+                    from: GroupModel.collection.name,
+                    localField: 'group_id',
+                    foreignField: 'group_id',
+                    as: 'groupDetails'
+                }
+            },
+            {
+                $unwind: '$groupDetails'
+            },
+            {
                 $addFields: {
                     // Format date as "01 August, 2024"
                     formattedDate: {
@@ -149,6 +160,7 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
                 $project: {
                     run_id: 1,
                     group_id: 1,
+                    group_name: '$groupDetails.group_name', // Add group_name from GroupModel
                     date: "$formattedDate", // Use the formatted date
                     time: 1, // Time remains the same
                     meeting_point: 1,
@@ -166,6 +178,7 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
         throw err;
     }
 };
+
 
 
 
