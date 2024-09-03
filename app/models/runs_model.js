@@ -1,17 +1,21 @@
 const {RunModel, GroupModel, RouteModel, RouteWaypointsTableModel, UsersAttendingRunsModel} = require("../../db/seeds/seed")
 
-exports.fetchRunsByGroup = async (group_id, future_runs) => {
+exports.fetchRunsByGroup = async (group_id, future_runs, user_id) => {
     try {
-        // Define the date criteria based on future_runs
         const now = new Date();
         const dateFilter = future_runs === 'y'
             ? { date: { $gte: now } }
             : { date: { $lt: now } };
 
-        // Aggregate the data by finding runs with the given group_id
+        // Fetch the runs that the user is attending
+        const userRuns = await UsersAttendingRunsModel.find({ user_id: Number(user_id) }).select('run_id');
+        console.log(userRuns);
+        const userRunIds = userRuns.map(run => run.run_id); // Extract run_ids
+
+        // Aggregate runs for the given group_id and add the is_user_attending field
         const runs = await RunModel.aggregate([
             {
-                $match: { 
+                $match: {
                     group_id: Number(group_id),
                     ...dateFilter // Apply the date filter
                 }
@@ -25,6 +29,14 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
                             date: "$date",
                             timezone: "UTC"
                         }
+                    },
+                    // Check if the user is attending this run
+                    is_user_attending: {
+                        $cond: {
+                            if: { $in: ["$run_id", userRunIds] }, // If run_id is in user's runs
+                            then: "yes",
+                            else: "no"
+                        }
                     }
                 }
             },
@@ -32,12 +44,13 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
                 $project: {
                     run_id: 1,
                     group_id: 1,
-                    date: "$formattedDate", // Use the formatted date
-                    time: 1, // Time remains the same
+                    date: "$formattedDate", // Use formatted date
+                    time: 1,
                     meeting_point: 1,
                     distance: 1,
                     distance_unit: 1,
-                    route_id: 1
+                    route_id: 1,
+                    is_user_attending: 1 // Include the new field
                 }
             }
         ]);
@@ -48,6 +61,7 @@ exports.fetchRunsByGroup = async (group_id, future_runs) => {
         throw err;
     }
 };
+
 
 
 

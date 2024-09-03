@@ -271,13 +271,13 @@ describe('GetUsersByRun GET /users/run/:run_id', () => {
     });
 });
 
-describe('GetRunsByGroup GET /runs/group/:group_id', () => {
+describe.only('GetRunsByGroup GET /runs/group/:group_id', () => {
     test('returns a 200 status code', () => {
-        return request(app).get("/api/runs/group/1").expect(200)
+        return request(app).get("/api/runs/group/1?user_id=1").expect(200)
     }); 
     test('returns the correct number of runs for group_id 2 future runs', () => {
         return request(app)
-            .get("/api/runs/group/2?future_runs=y")
+            .get("/api/runs/group/2?future_runs=y&user_id=1")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs.length).toBe(0);
@@ -285,7 +285,7 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     });
     test('returns the correct number of runs for group_id 2 past runs', () => {
         return request(app)
-            .get("/api/runs/group/2?future_runs=n")
+            .get("/api/runs/group/2?future_runs=n&user_id=1")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs.length).toBe(2);
@@ -293,14 +293,14 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     });
     test('returns the correct number of runs for group_id 4 past runs', () => {
         return request(app)
-            .get("/api/runs/group/4?future_runs=n")
+            .get("/api/runs/group/4?future_runs=n&user_id=1")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs.length).toBe(0);
             });
     });
     test('returns runs for a specified group with the following properties', () => {
-        return request(app).get("/api/runs/group/1").expect(200).then(({body}) => {
+        return request(app).get("/api/runs/group/1?user_id=1").expect(200).then(({body}) => {
             expect(body.runs[0]).toHaveProperty("run_id", expect.any(Number));
             expect(body.runs[0]).toHaveProperty("group_id", expect.any(Number));
             expect(body.runs[0]).toHaveProperty("date", expect.any(String));
@@ -309,11 +309,12 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
             expect(body.runs[0]).toHaveProperty("distance", expect.any(Number));
             expect(body.runs[0]).toHaveProperty("distance_unit", expect.any(String));
             expect(body.runs[0]).toHaveProperty("route_id", expect.any(Number));
+            expect(body.runs[0]).toHaveProperty("is_user_attending", expect.any(String));
             })
         });
     test('returns a run with the correct properties for group_id 1', () => {
         return request(app)
-            .get("/api/runs/group/1?future_runs=n")
+            .get("/api/runs/group/1?future_runs=n&user_id=1")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs[0]).toEqual(expect.objectContaining({
@@ -324,12 +325,13 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
                     distance: 5,
                     distance_unit: "km",
                     route_id: 1,
+                    is_user_attending: 'yes'
                 }));
             });
     });
     test('returns an empty array for a group that has no runs', () => {
         return request(app)
-            .get("/api/runs/group/99")
+            .get("/api/runs/group/99?user_id=1")
             .expect(200)
             .then(({ body }) => {
                 expect(body.runs.length).toBe(0);
@@ -337,7 +339,7 @@ describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     });
     test('returns a status code of 400 Bad Request for an invalid group_id format', () => {
         return request(app)
-            .get("/api/runs/group/invalid_group_id")
+            .get("/api/runs/group/invalid_group_id?user_id=1")
             .expect(400)
             .then(({ body }) => {
                 expect(body.message).toBe('Bad Request');
