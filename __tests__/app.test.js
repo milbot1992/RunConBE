@@ -271,7 +271,7 @@ describe('GetUsersByRun GET /users/run/:run_id', () => {
     });
 });
 
-describe.only('GetRunsByGroup GET /runs/group/:group_id', () => {
+describe('GetRunsByGroup GET /runs/group/:group_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/runs/group/1?user_id=1").expect(200)
     }); 
@@ -1671,7 +1671,7 @@ describe('POST PostUserAttendingRun /api/runs/users', () => {
     });
 });
 
-describe('DELETE /api/runs/:run_id/users/:user_id', () => {
+describe('DELETE DeleteUserAttendingRun /api/runs/:run_id/users/:user_id', () => {
     test('should return a 200 status code and remove the user from the run', async () => {
         // Create a user attending a run for testing
         const newUserRun = {

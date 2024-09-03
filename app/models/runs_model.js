@@ -9,7 +9,6 @@ exports.fetchRunsByGroup = async (group_id, future_runs, user_id) => {
 
         // Fetch the runs that the user is attending
         const userRuns = await UsersAttendingRunsModel.find({ user_id: Number(user_id) }).select('run_id');
-        console.log(userRuns);
         const userRunIds = userRuns.map(run => run.run_id); // Extract run_ids
 
         // Aggregate runs for the given group_id and add the is_user_attending field

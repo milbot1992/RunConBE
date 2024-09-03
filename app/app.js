@@ -7,6 +7,7 @@ const app = express()
 // Use CORS middleware
 app.use(cors({
     origin: '*', // Allow all origins - for now, change to front end domain upon production
+    methods: ['GET', 'POST', 'DELETE', 'PATCH']
   }));
 
 app.use(express.json())
