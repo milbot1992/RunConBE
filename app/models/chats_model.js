@@ -1,4 +1,4 @@
-const { ChatsModel, ChatParticipantsModel, UserModel } = require("../../db/seeds/seed")
+const { ChatsModel, ChatParticipantsModel, UserModel, GroupModel } = require("../../db/seeds/seed")
 
 exports.fetchChatsForUser = async (user_id) => {
     try {
@@ -52,13 +52,20 @@ exports.fetchChatsForUser = async (user_id) => {
                     _id: 0,
                     chat_id: 1,
                     username: '$userDetails.username',
-                    first_name: '$userDetails.first_name'
+                    first_name: '$userDetails.first_name',
+                    picture_url: '$userDetails.picture_url' // Include picture_url from UsersModel
                 }
             },
             {
                 $group: {
                     _id: '$chat_id',
-                    users: { $push: { username: '$username', first_name: '$first_name' } }
+                    users: {
+                        $push: {
+                            username: '$username',
+                            first_name: '$first_name',
+                            picture_url: '$picture_url'  // Add picture_url to each user
+                        }
+                    }
                 }
             }
         ]);
@@ -69,10 +76,20 @@ exports.fetchChatsForUser = async (user_id) => {
             return map;
         }, {});
 
-        // Attach users to each chat
-        const chatsWithUsers = chats.map(chat => ({
-            ...chat,
-            users: chatUsersMap[chat.chat_id] || []
+        // Step 3: Join with GroupModel if is_group is true
+        const chatsWithUsers = await Promise.all(chats.map(async chat => {
+            if (chat.is_group) {
+                const group = await GroupModel.findOne({ group_id: chat.group_id }, { picture_url: 1 }).exec();
+                return {
+                    ...chat,
+                    users: chatUsersMap[chat.chat_id] || [],
+                    group_picture_url: group ? group.picture_url : null // Add group picture_url if available
+                };
+            }
+            return {
+                ...chat,
+                users: chatUsersMap[chat.chat_id] || []
+            };
         }));
 
         return {
@@ -83,3 +100,4 @@ exports.fetchChatsForUser = async (user_id) => {
         throw err;
     }
 };
+

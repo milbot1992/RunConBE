@@ -1066,6 +1066,7 @@ describe('GetChatsForUser GET /api/chats/:user_id', () => {
         return request(app).get("/api/chats/1").expect(200).then(({ body }) => {
             expect(body.chats[0].users[0]).toHaveProperty("username", expect.any(String));
             expect(body.chats[0].users[0]).toHaveProperty("first_name", expect.any(String));
+            expect(body.chats[0].users[0]).toHaveProperty("picture_url", expect.any(String));
         });
     });
     test('returns a chat with the correct properties for user_id 1', () => {
@@ -1077,8 +1078,9 @@ describe('GetChatsForUser GET /api/chats/:user_id', () => {
                     chat_id: 1,
                     is_group: true,
                     group_id: 1,
+                    group_picture_url: "exampleurl1",
                     created_at: expect.any(String),
-                    users: [ { username: 'user2', first_name: 'Bob' } ]
+                    users: [ { username: 'user2', first_name: 'Bob', picture_url: "exampleimageurl2" } ]
                 }));
             });
     });
