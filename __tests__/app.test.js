@@ -1717,3 +1717,48 @@ describe('DELETE DeleteUserAttendingRun /api/runs/:run_id/users/:user_id', () =>
             });
     });
 });
+
+describe('GetLatestMessageFromChat GET /messages/latest/:chat_id', () => {
+    test('returns a 200 status code for a valid chat_id', () => {
+        return request(app).get("/api/messages/latest/1").expect(200);
+    });
+    test('returns the correct properties for the latest message', () => {
+        return request(app)
+            .get("/api/messages/latest/1")
+            .expect(200)
+            .then(({ body }) => {
+                console.log(body);
+                expect(body).toHaveProperty("content", expect.any(String));
+                expect(body).toHaveProperty("timestamp", expect.any(String));
+                expect(body).toHaveProperty("username", expect.any(String));
+            });
+    });
+    test('returns the correct latest message for chat_id 1', () => {
+        return request(app)
+            .get("/api/messages/latest/1")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body).toMatchObject({
+                    content: "Hi there!",
+                    timestamp: expect.any(String),
+                    username: "user2"
+                });
+            });
+    });
+    test('returns a status code of 404 Not Found for a non-existing chat_id', () => {
+        return request(app)
+            .get("/api/messages/latest/99")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.message).toBe('No messages found for this chat!');
+            });
+    });
+    test('returns a status code of 400 Bad Request for an invalid chat_id format', () => {
+        return request(app)
+            .get("/api/messages/latest/invalid_chat_id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe('Bad Request');
+            });
+    });
+});

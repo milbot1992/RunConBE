@@ -1,4 +1,4 @@
-const {MessagesModel} = require("../../db/seeds/seed")
+const {MessagesModel, UserModel} = require("../../db/seeds/seed")
 
 exports.fetchMessagesForChat = async (chat_id) => {
     try {
@@ -28,6 +28,53 @@ exports.fetchMessagesForChat = async (chat_id) => {
         throw err;
     }
 };
+
+exports.fetchLatestMessageFromChat = async (chat_id) => {
+    console.log('in model: ', chat_id);
+    try {
+        // Step 1: Fetch the latest message for the specified chat_id
+        const latestMessage = await MessagesModel.aggregate([
+            {
+                $match: { chat_id: Number(chat_id) }
+            },
+            {
+                $sort: { timestamp: -1 }  // Sort by timestamp in descending order
+            },
+            {
+                $limit: 1  // Get the most recent message
+            },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'sender_id',
+                    foreignField: 'user_id',
+                    as: 'senderDetails'
+                }
+            },
+            {
+                $unwind: '$senderDetails'
+            },
+            {
+                $project: {
+                    _id: 0,
+                    content: 1,
+                    timestamp: 1,
+                    username: '$senderDetails.username'  // Include username of the message sender
+                }
+            }
+        ]);
+        console.log(latestMessage);
+        if (!latestMessage || latestMessage.length === 0) {
+            return Promise.reject({ status: 404, message: 'No messages found for this chat!' });
+        }
+        console.log(latestMessage);
+        return latestMessage[0];
+    } catch (err) {
+        console.error('Error fetching latest message from chat:', err);
+        throw err;
+    }
+};
+
 
 exports.createAMessage = async (newMessage) => {
     try {

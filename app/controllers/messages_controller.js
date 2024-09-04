@@ -1,4 +1,4 @@
-const { fetchMessagesForChat, createAMessage, updateMessageById, removeMessageById } = require("../models/messages_model")
+const { fetchMessagesForChat, fetchLatestMessageFromChat, createAMessage, updateMessageById, removeMessageById } = require("../models/messages_model")
 
 exports.GetMessagesForChat = (req, res, next) => {
     const { chat_id } = req.params;
@@ -14,6 +14,23 @@ exports.GetMessagesForChat = (req, res, next) => {
     .catch((err) => {
         next(err);
     });
+};
+
+exports.getLatestMessageFromChat = (req, res, next) => {
+    const { chat_id } = req.params;
+
+    // Validate chat_id before making the database call
+    if (isNaN(chat_id)) {
+        return res.status(400).send({ message: 'Bad Request' });
+    }
+
+    fetchLatestMessageFromChat(chat_id)
+        .then((message) => {
+            res.status(200).send(message);
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 exports.PostAMessage = (req, res, next) => {
