@@ -37,7 +37,7 @@ module.exports = [
     },
     {
         "chat_id": 2,
-        "sender_id": 3,
+        "sender_id": 1,
         "content": "Personal message here.",
         "timestamp": "2024-08-02T00:01:00.000Z"
     },
@@ -49,7 +49,7 @@ module.exports = [
     },
     {
         "chat_id": 2,
-        "sender_id": 3,
+        "sender_id": 1,
         "content": "Great to hear that.",
         "timestamp": "2024-08-02T00:03:00.000Z"
     },
@@ -61,7 +61,7 @@ module.exports = [
     },
     {
         "chat_id": 2,
-        "sender_id": 3,
+        "sender_id": 1,
         "content": "Let's meet tomorrow.",
         "timestamp": "2024-08-02T00:05:00.000Z"
     },
