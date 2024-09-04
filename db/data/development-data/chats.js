@@ -1,30 +1,18 @@
 module.exports = [
     {
-        "chat_id": 1,
-        "user_id": 1,
+        "is_group": true,
+        "group_id": 1,
     },
     {
-        "chat_id": 1,
-        "user_id": 2,
+        "is_group": false,
+        "group_id": 999999999,
     },
     {
-        "chat_id": 1,
-        "user_id": 3,
+        "is_group": true,
+        "group_id": 2,
     },
     {
-        "chat_id": 2,
-        "user_id": 3,
-    },
-    {
-        "chat_id": 2,
-        "user_id": 4,
-    },
-    {
-        "chat_id": 3,
-        "user_id": 3,
-    },
-    {
-        "chat_id": 3,
-        "user_id": 4,
+        "is_group": false,
+        "group_id": 999999999,
     }
 ];

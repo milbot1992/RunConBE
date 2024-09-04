@@ -1041,7 +1041,7 @@ describe('DELETE /api/runs/:run_id', () => {
     });
 });
 
-describe('GetChatsForUser GET /api/chats/:user_id', () => {
+describe.only('GetChatsForUser GET /api/chats/:user_id', () => {
     test('returns a 200 status code for a valid user', () => {
         return request(app).get("/api/chats/1").expect(200);
     });
@@ -1058,6 +1058,7 @@ describe('GetChatsForUser GET /api/chats/:user_id', () => {
             expect(body.chats[0]).toHaveProperty("chat_id", expect.any(Number));
             expect(body.chats[0]).toHaveProperty("is_group", expect.any(Boolean));
             expect(body.chats[0]).toHaveProperty("group_id", expect.any(Number));
+            expect(body.chats[0]).toHaveProperty("group_name", expect.any(String));
             expect(body.chats[0]).toHaveProperty("created_at", expect.any(String));
             expect(body.chats[0]).toHaveProperty("users", expect.any(Array));
         });
@@ -1078,6 +1079,7 @@ describe('GetChatsForUser GET /api/chats/:user_id', () => {
                     chat_id: 1,
                     is_group: true,
                     group_id: 1,
+                    group_name: "test1",
                     group_picture_url: "exampleurl1",
                     created_at: expect.any(String),
                     users: [ { username: 'user2', first_name: 'Bob', picture_url: "exampleimageurl2" } ]

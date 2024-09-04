@@ -2,7 +2,7 @@ const { ChatsModel, ChatParticipantsModel, UserModel, GroupModel } = require("..
 
 exports.fetchChatsForUser = async (user_id) => {
     try {
-        // Step 1: Fetch chats for the specified user
+        // Fetch chats and relevant details in one aggregation pipeline
         const chats = await ChatParticipantsModel.aggregate([
             {
                 $match: { user_id: Number(user_id) }
@@ -20,26 +20,45 @@ exports.fetchChatsForUser = async (user_id) => {
             },
             {
                 $replaceRoot: { newRoot: '$chatDetails' }
-            }
-        ]);
-
-        if (chats.length === 0) {
-            return Promise.reject({ status: 404, message: 'No chats found for this user!' });
-        }
-
-        // Step 2: Fetch users for each chat, excluding the specified user
-        const chat_ids = chats.map(chat => chat.chat_id);
-        const chatParticipants = await ChatParticipantsModel.aggregate([
+            },
             {
-                $match: {
-                    chat_id: { $in: chat_ids },
-                    user_id: { $ne: Number(user_id) }  // Exclude the requesting user
+                $lookup: {
+                    from: GroupModel.collection.name,
+                    let: { group_id: '$group_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$group_id', '$$group_id'] }
+                            }
+                        },
+                        {
+                            $project: { group_name: 1, picture_url: 1 }
+                        }
+                    ],
+                    as: 'groupDetails'
+                }
+            },
+            {
+                $addFields: {
+                    group_name: { $arrayElemAt: ['$groupDetails.group_name', 0] },
+                    group_picture_url: { $arrayElemAt: ['$groupDetails.picture_url', 0] }
                 }
             },
             {
                 $lookup: {
+                    from: ChatParticipantsModel.collection.name,
+                    localField: 'chat_id',
+                    foreignField: 'chat_id',
+                    as: 'participants'
+                }
+            },
+            {
+                $unwind: '$participants'
+            },
+            {
+                $lookup: {
                     from: UserModel.collection.name,
-                    localField: 'user_id',
+                    localField: 'participants.user_id',
                     foreignField: 'user_id',
                     as: 'userDetails'
                 }
@@ -48,56 +67,41 @@ exports.fetchChatsForUser = async (user_id) => {
                 $unwind: '$userDetails'
             },
             {
-                $project: {
-                    _id: 0,
-                    chat_id: 1,
-                    username: '$userDetails.username',
-                    first_name: '$userDetails.first_name',
-                    picture_url: '$userDetails.picture_url' // Include picture_url from UsersModel
+                $match: {
+                    'participants.user_id': { $ne: Number(user_id) }  // Exclude the requesting user
                 }
             },
             {
                 $group: {
-                    _id: '$chat_id',
+                    _id: '$_id',
+                    chat_id: { $first: '$chat_id' },
+                    is_group: { $first: '$is_group' },
+                    group_id: { $first: '$group_id' },
+                    group_name: { $first: '$group_name' },
+                    group_picture_url: { $first: '$group_picture_url' },
+                    created_at: { $first: '$created_at' },
                     users: {
                         $push: {
-                            username: '$username',
-                            first_name: '$first_name',
-                            picture_url: '$picture_url'  // Add picture_url to each user
+                            username: '$userDetails.username',
+                            first_name: '$userDetails.first_name',
+                            picture_url: '$userDetails.picture_url'
                         }
                     }
                 }
             }
         ]);
 
-        // Organise users by chat_id
-        const chatUsersMap = chatParticipants.reduce((map, chat) => {
-            map[chat._id] = chat.users;
-            return map;
-        }, {});
-
-        // Step 3: Join with GroupModel if is_group is true
-        const chatsWithUsers = await Promise.all(chats.map(async chat => {
-            if (chat.is_group) {
-                const group = await GroupModel.findOne({ group_id: chat.group_id }, { picture_url: 1 }).exec();
-                return {
-                    ...chat,
-                    users: chatUsersMap[chat.chat_id] || [],
-                    group_picture_url: group ? group.picture_url : null // Add group picture_url if available
-                };
-            }
-            return {
-                ...chat,
-                users: chatUsersMap[chat.chat_id] || []
-            };
-        }));
+        if (chats.length === 0) {
+            return Promise.reject({ status: 404, message: 'No chats found for this user!' });
+        }
 
         return {
-            chats: chatsWithUsers
+            chats
         };
     } catch (err) {
         console.error('Error fetching chats for user:', err);
         throw err;
     }
 };
+
 
