@@ -8,12 +8,32 @@ exports.fetchMessagesForChat = async (chat_id) => {
                 $match: { chat_id: Number(chat_id) }
             },
             {
+                $lookup: {
+                    from: 'users', // The collection name for UserModel
+                    localField: 'sender_id',
+                    foreignField: 'user_id',
+                    as: 'senderDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$senderDetails',
+                    preserveNullAndEmptyArrays: true // This will allow messages without sender details to be included
+                }
+            },
+            {
+                $addFields: {
+                    first_name: { $ifNull: ['$senderDetails.first_name', 'Unknown'] } // Directly add 'first_name' field
+                }
+            },
+            {
                 $project: {
                     message_id: 1,
                     chat_id: 1,
                     timestamp: 1,
                     sender_id: 1,
                     content: 1,
+                    first_name: 1 // Include the first_name field
                 }
             }
         ]);
@@ -28,6 +48,7 @@ exports.fetchMessagesForChat = async (chat_id) => {
         throw err;
     }
 };
+
 
 exports.fetchLatestMessageFromChat = async (chat_id) => {
     console.log('in model: ', chat_id);

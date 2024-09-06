@@ -1041,7 +1041,7 @@ describe('DELETE /api/runs/:run_id', () => {
     });
 });
 
-describe.only('GetChatsForUser GET /api/chats/:user_id', () => {
+describe('npm run seedForUser GET /api/chats/:user_id', () => {
     test('returns a 200 status code for a valid user', () => {
         return request(app).get("/api/chats/1").expect(200);
     });
@@ -1104,7 +1104,7 @@ describe.only('GetChatsForUser GET /api/chats/:user_id', () => {
     });
 });
 
-describe('GetMessagesForChat GET /messages/:chat_id', () => {
+describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/messages/1").expect(200);
     });
@@ -1123,6 +1123,7 @@ describe('GetMessagesForChat GET /messages/:chat_id', () => {
             expect(body.messages[0]).toHaveProperty("sender_id", expect.any(Number));
             expect(body.messages[0]).toHaveProperty("content", expect.any(String));
             expect(body.messages[0]).toHaveProperty("timestamp", expect.any(String));
+            expect(body.messages[0]).toHaveProperty("first_name", expect.any(String));
         });
     });
     test('returns a message with the correct properties for a specific chat_id', () => {
@@ -1135,7 +1136,8 @@ describe('GetMessagesForChat GET /messages/:chat_id', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Hello, everyone!",
-                    timestamp: expect.any(String)
+                    timestamp: expect.any(String),
+                    first_name: "Alice"
                 }));
             });
     });
