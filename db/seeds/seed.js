@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
     open_to_gender: { type: String, required: true },
     pronouns: String,
     picture_url: String,
+    age: { type: Number}, 
 }, { versionKey: false });
 
 const UserModel = mongoose.model("User", userSchema);

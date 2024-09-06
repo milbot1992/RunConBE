@@ -46,7 +46,7 @@ describe('GetAllGroups GET /api/groups', () => {
     });
 });
 
-describe('GetUserById GET /api/users/user/:user_id', () => {
+describe.only('GetUserById GET /api/users/user/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/users/user/1").expect(200)
     }); 
