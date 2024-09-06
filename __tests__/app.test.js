@@ -817,7 +817,7 @@ describe("PATCH /api/runs/:run_id", () => {
     });
 });
 
-describe("PATCH /api/users/:user_id", () => {
+describe.only("PATCH /api/users/:user_id", () => {
     test("should return status code 200 and update the user details", () => {
         const updateBody = { gender: "male", single_open: false };
         return request(app)
@@ -1104,7 +1104,7 @@ describe('npm run seedForUser GET /api/chats/:user_id', () => {
     });
 });
 
-describe.only('GetMessagesForChat GET /messages/:chat_id', () => {
+describe('GetMessagesForChat GET /messages/:chat_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/messages/1").expect(200);
     });

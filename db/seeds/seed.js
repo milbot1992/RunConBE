@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     single_open: { type: Boolean, required: true },
     connect_open: { type: Boolean, required: true },
     open_to_gender: { type: String, required: true },
+    pronouns: String,
     picture_url: String,
 }, { versionKey: false });
 
