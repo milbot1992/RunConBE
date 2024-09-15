@@ -46,7 +46,7 @@ describe('GetAllGroups GET /api/groups', () => {
     });
 });
 
-describe.only('GetUserById GET /api/users/user/:user_id', () => {
+describe('GetUserById GET /api/users/user/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/users/user/1").expect(200)
     }); 
@@ -817,7 +817,7 @@ describe("PATCH /api/runs/:run_id", () => {
     });
 });
 
-describe.only("PATCH /api/users/:user_id", () => {
+describe("PATCH /api/users/:user_id", () => {
     test("should return status code 200 and update the user details", () => {
         const updateBody = { gender: "male", single_open: false };
         return request(app)
@@ -1314,7 +1314,7 @@ describe('DELETE /api/messages/:message_id', () => {
     });
 });
 
-describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
+describe.only('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/posts/groups/1").expect(200)
     }); 
@@ -1362,6 +1362,20 @@ describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
                     created_at: expect.any(String)
                 }));
             });
+    });
+    test('returns posts sorted by most recent first based on created_at', () => {
+        return request(app).get("/api/posts/groups/1").expect(200).then(({ body }) => {
+            const posts = body.posts;
+
+            // Check that the posts are sorted in descending order by created_at
+            for (let i = 0; i < posts.length - 1; i++) {
+                const firstPostDate = new Date(posts[i].created_at);
+                const nextPostDate = new Date(posts[i + 1].created_at);
+                
+                // Assert that the first post is newer than the next post
+                expect(firstPostDate.getTime()).toBeGreaterThanOrEqual(nextPostDate.getTime());
+            }
+        });
     });
     test('returns a status code of 404 Not Found for a user_id that has no group posts', () => {
         return request(app)

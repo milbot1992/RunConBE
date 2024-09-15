@@ -11,7 +11,6 @@ exports.fetchPostsForUserGroups = async (user_id) => {
 
         // Extract group_ids
         const groupIds = userGroups.map(entry => entry.group_id);
-        console.log('group_ids:', groupIds);
 
         // Aggregation pipeline to fetch posts and join with user pictures
         const posts = await PostsModel.aggregate([
@@ -48,6 +47,12 @@ exports.fetchPostsForUserGroups = async (user_id) => {
                 $project: {
                     userDetails: 0
                 }
+            },
+            // Sort posts by created_at in descending order (most recent first)
+            {
+                $sort: {
+                    created_at: -1 // Descending order
+                }
             }
         ]).exec();
 
@@ -61,6 +66,7 @@ exports.fetchPostsForUserGroups = async (user_id) => {
         throw err;
     }
 };
+
 
 
 

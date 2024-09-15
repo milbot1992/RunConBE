@@ -4,8 +4,8 @@ exports.fetchRunsByGroup = async (group_id, future_runs, user_id) => {
     try {
         const now = new Date();
         const dateFilter = future_runs === 'y'
-            ? { date: { $gte: now } }
-            : { date: { $lt: now } };
+            ? { date: { $gte: now } } // Upcoming runs (future)
+            : { date: { $lt: now } }; // Past runs
 
         // Fetch the runs that the user is attending
         const userRuns = await UsersAttendingRunsModel.find({ user_id: Number(user_id) }).select('run_id');
@@ -51,6 +51,12 @@ exports.fetchRunsByGroup = async (group_id, future_runs, user_id) => {
                     route_id: 1,
                     is_user_attending: 1 // Include the new field
                 }
+            },
+            // Sort by date
+            {
+                $sort: {
+                    date: future_runs === 'y' ? 1 : -1 // Ascending for future, Descending for past
+                }
             }
         ]);
 
@@ -60,9 +66,6 @@ exports.fetchRunsByGroup = async (group_id, future_runs, user_id) => {
         throw err;
     }
 };
-
-
-
 
 exports.fetchRunsById = async (run_id) => {
     try {
@@ -182,6 +185,12 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
                     route_id: 1,
                     location: 1
                 }
+            },
+            // Sort by date
+            {
+                $sort: {
+                    date: future_runs === 'y' ? 1 : -1 // Ascending for future runs, Descending for past runs
+                }
             }
         ]);
 
@@ -191,8 +200,6 @@ exports.fetchRunsByUserId = async (user_id, future_runs) => {
         throw err;
     }
 };
-
-
 
 
 exports.fetchUpcomingRunForGroup = async (group_id) => {
