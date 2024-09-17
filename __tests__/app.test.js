@@ -1124,6 +1124,7 @@ describe('GetMessagesForChat GET /messages/:chat_id', () => {
             expect(body.messages[0]).toHaveProperty("content", expect.any(String));
             expect(body.messages[0]).toHaveProperty("timestamp", expect.any(String));
             expect(body.messages[0]).toHaveProperty("first_name", expect.any(String));
+            expect(body.messages[0]).toHaveProperty("read_by", expect.any(Array));
         });
     });
     test('returns a message with the correct properties for a specific chat_id', () => {
@@ -1137,7 +1138,8 @@ describe('GetMessagesForChat GET /messages/:chat_id', () => {
                     chat_id: 1,
                     content: "Hello, everyone!",
                     timestamp: expect.any(String),
-                    first_name: "Alice"
+                    first_name: "Alice",
+                    read_by: [1,2]
                 }));
             });
     });
@@ -1164,7 +1166,8 @@ describe('POST /api/messages', () => {
         const newMessage = {
             sender_id: 1,
             chat_id: 1,
-            content: "Test message!"
+            content: "Test message!",
+            read_by: [1,2]
         };
         return request(app)
             .post('/api/messages')
@@ -1176,6 +1179,7 @@ describe('POST /api/messages', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Test message!",
+                    read_by: [1,2],
                     timestamp: expect.any(String)
                 });
             });
@@ -1185,7 +1189,8 @@ describe('POST /api/messages', () => {
             sender_id: 1,
             chat_id: 1,
             content: "Test message 2!",
-            extra_field: 'extra field'
+            extra_field: 'extra field',
+            read_by: [1,2]
         };
         return request(app)
             .post('/api/messages')
@@ -1197,6 +1202,7 @@ describe('POST /api/messages', () => {
                     sender_id: 1,
                     chat_id: 1,
                     content: "Test message 2!",
+                    read_by: [1,2],
                     timestamp: expect.any(String)
                 });
             });
@@ -1314,7 +1320,7 @@ describe('DELETE /api/messages/:message_id', () => {
     });
 });
 
-describe.only('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
+describe('GetPostsForUserGroups GET /posts/groups/:user_id', () => {
     test('returns a 200 status code', () => {
         return request(app).get("/api/posts/groups/1").expect(200)
     }); 
@@ -1672,7 +1678,6 @@ describe('POST PostUserAttendingRun /api/runs/users', () => {
             .send(invalidUserRun)
             .expect(400)
             .then(({ body }) => {
-                console.log('>>>>', body.userRun);
                 expect(body.message).toBe('Bad request');
             });
     });
@@ -1745,10 +1750,10 @@ describe('GetLatestMessageFromChat GET /messages/latest/:chat_id', () => {
             .get("/api/messages/latest/1")
             .expect(200)
             .then(({ body }) => {
-                console.log(body);
                 expect(body).toHaveProperty("content", expect.any(String));
                 expect(body).toHaveProperty("timestamp", expect.any(String));
                 expect(body).toHaveProperty("username", expect.any(String));
+                expect(body).toHaveProperty("read_by", expect.any(Array));
             });
     });
     test('returns the correct latest message for chat_id 1', () => {
@@ -1759,7 +1764,8 @@ describe('GetLatestMessageFromChat GET /messages/latest/:chat_id', () => {
                 expect(body).toMatchObject({
                     content: "Hi there!",
                     timestamp: expect.any(String),
-                    username: "user2"
+                    username: "user2",
+                    read_by: [1, 2] 
                 });
             });
     });

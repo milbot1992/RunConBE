@@ -119,6 +119,7 @@ const MessagesSchema = new mongoose.Schema({
     chat_id: { type: Number, required: true, ref: 'Chats' },
     sender_id: { type: Number, required: true, ref: 'User' },
     content: { type: String, required: true },
+    read_by: [{ type: Number, ref: 'User' }] 
 }, { versionKey: false });
 
 const MessagesModel = mongoose.model("Messages", MessagesSchema);
