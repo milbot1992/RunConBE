@@ -1041,7 +1041,7 @@ describe('DELETE /api/runs/:run_id', () => {
     });
 });
 
-describe('npm run seedForUser GET /api/chats/:user_id', () => {
+describe('GetChatsForUser GET /api/chats/:user_id', () => {
     test('returns a 200 status code for a valid user', () => {
         return request(app).get("/api/chats/1").expect(200);
     });
