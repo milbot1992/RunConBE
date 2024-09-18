@@ -11,7 +11,7 @@ module.exports = [
         "sender_id": 2,
         "content": "Hi there!",
         "timestamp": "2024-08-01T00:02:00.000Z",
-        "read_by": [1, 2] 
+        "read_by": [2] 
     },
     {
         "chat_id": 2,

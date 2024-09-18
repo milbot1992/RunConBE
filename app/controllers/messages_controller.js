@@ -1,4 +1,4 @@
-const { fetchMessagesForChat, fetchLatestMessageFromChat, createAMessage, updateMessageById, removeMessageById } = require("../models/messages_model")
+const { fetchMessagesForChat, fetchLatestMessageFromChat, createAMessage, updateMessageById, removeMessageById, updateMessagesInChatAsRead } = require("../models/messages_model")
 
 exports.GetMessagesForChat = (req, res, next) => {
     const { chat_id } = req.params;
@@ -85,4 +85,20 @@ exports.deleteAMessage = (req, res, next) => {
         .catch((err) => {
             next(err);
         });
+};
+
+exports.patchMessagesInChatAsRead = async (req, res, next) => {
+    const { chat_id } = req.params;
+    const { user_id } = req.body;
+
+    if (isNaN(chat_id) || isNaN(user_id)) {
+        return res.status(400).send({ message: 'Bad Request' });
+    }
+
+    try {
+        await updateMessagesInChatAsRead(chat_id, user_id);
+        res.status(200).send({ message: 'Messages marked as read successfully' });
+    } catch (err) {
+        next(err);
+    }
 };

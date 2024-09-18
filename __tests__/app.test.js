@@ -1786,3 +1786,49 @@ describe('GetLatestMessageFromChat GET /messages/latest/:chat_id', () => {
             });
     });
 });
+
+describe("PATCH /api/messages/chat/:chat_id/read", () => {
+    test("should return status code 200 and mark all messages in chat as read, and verify messages are updated", async () => {
+        const user_id = 1;
+        const chat_id = 1;
+
+        // Mark all messages in chat as read
+        await request(app)
+            .patch(`/api/messages/chat/${chat_id}/read`)
+            .send({ user_id })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.message).toBe('Messages marked as read successfully');
+            });
+
+        // Fetch all messages for the chat
+        const { body: messagesResponse } = await request(app)
+            .get(`/api/messages/${chat_id}`)
+            .expect(200);
+
+        // Verify that all messages in chat have been marked as read by user_id
+        const messages = messagesResponse.messages;
+        messages.forEach(message => {
+            expect(message.read_by).toContain(user_id);
+        });
+    });
+    test("should return status code 400 when chat_id or user_id is invalid", () => {
+        const requestBody = { user_id: 1 };
+        return request(app)
+            .patch("/api/messages/chat/invalid_id/read")
+            .send(requestBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe("Bad Request");
+            });
+    });
+    test("should return status code 400 when user_id is missing in the request body", () => {
+        return request(app)
+            .patch("/api/messages/chat/1/read")
+            .send({})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.message).toBe("Bad Request");
+            });
+    });
+});

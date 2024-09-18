@@ -167,3 +167,16 @@ exports.removeMessageById = async (message_id) => {
         throw err;
     }
 };
+
+exports.updateMessagesInChatAsRead = async (chat_id, user_id) => {
+    try {
+        // Update all messages in the specified chat to mark them as read by the user
+        await MessagesModel.updateMany(
+            { chat_id: Number(chat_id) },
+            { $addToSet: { read_by: Number(user_id) } } // $addToSet to avoid duplicates
+        );
+    } catch (error) {
+        console.error('Error marking messages as read:', error);
+        throw error;
+    }
+};
