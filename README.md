@@ -117,3 +117,6 @@ The project has robust error handling middleware that manages both general and M
 - MongoDB for NoSQL database management.
 - Docker for containerised application deployment.
 - Postman for API testing.
+
+### Frontend
+React Native mobile app frontend - currently a private repo.
