@@ -1787,7 +1787,7 @@ describe('GetLatestMessageFromChat GET /messages/latest/:chat_id', () => {
     });
 });
 
-describe("PATCH /api/messages/chat/:chat_id/read", () => {
+describe.only("PATCH /api/messages/chat/:chat_id/read", () => {
     test("should return status code 200 and mark all messages in chat as read, and verify messages are updated", async () => {
         const user_id = 1;
         const chat_id = 1;
