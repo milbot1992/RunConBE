@@ -1,13 +1,17 @@
-FROM node:18
+FROM jenkins/jenkins:lts
 
-WORKDIR /usr/src/app
+USER root
 
-COPY package*.json ./
+# Update package list
+RUN apt-get update
 
-RUN npm install
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
+# Copy application files into the Docker container
+WORKDIR /var/jenkins_home/workspace/Be-Runcon
 COPY . .
 
-EXPOSE 3000
-
-CMD [ "npm", "start" ]
+USER jenkins
