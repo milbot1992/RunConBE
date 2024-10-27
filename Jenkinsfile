@@ -34,19 +34,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                // Cache for node_modules
-                sh '''
-                    if [ -d node_modules ]; then
-                        echo "Dependencies already installed"
-                    else
-                        npm install
-                    fi
-                '''
-            }
-        }
-
         stage('Run Tests') {
             steps {
                 // Test results reporting
