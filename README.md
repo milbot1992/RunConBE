@@ -54,7 +54,10 @@ The API supports cross-origin resource sharing (CORS), making it suitable for fr
   Docker configuration for containerised environment  
 
 - `Dockerfile`  
-  Dockerfile for building the application image  
+  Dockerfile for building the application image
+
+- `Jenkinsfile`  
+  File for setting up Jenkins pipeline for CI/CD: automating the build, test, and deployment process
 
 - `connection.js`  
   MongoDB connection logic  
@@ -116,6 +119,7 @@ The project has robust error handling middleware that manages both general and M
 - Node.js with Express for server-side API development.
 - MongoDB for NoSQL database management.
 - Docker for containerised application deployment.
+- Jenkins for CI/CD, automating the build, test, and deployment process
 - Postman for API testing.
 
 ### Frontend
