@@ -16,6 +16,8 @@ pipeline {
                 script {
                     commit_id = readFile('.git/commit-id').trim()
                 }
+                // Install Docker Compose
+                sh 'apt-get update && apt-get install -y docker-compose'
             }
         }
 
