@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:git'  // This image includes Docker and Docker Compose
+            args '-u root'       // Run as root for necessary permissions
+        }
+    }
 
     environment {
         MONGO_DB_PATH = "${WORKSPACE}/data/db"
@@ -8,7 +13,6 @@ pipeline {
     }
 
     stages {
-
         stage('Preparation') {
             steps {
                 checkout scm
@@ -16,8 +20,6 @@ pipeline {
                 script {
                     commit_id = readFile('.git/commit-id').trim()
                 }
-                // Install Docker Compose
-                sh 'apt-get update && apt-get install -y docker-compose'
             }
         }
 
@@ -38,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('docker build/push') {
+        stage('Docker Build/Push') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
