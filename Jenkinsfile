@@ -19,26 +19,20 @@ pipeline {
             }
         }
 
-        stage('Initialise MongoDB') {
+        stage('Start Services with Docker Compose') {
             steps {
                 script {
+                    sh 'docker-compose up -d'
                     sh '''
-                        # Create necessary directories within Jenkins workspace
-                        mkdir -p ${MONGO_DB_PATH} ${MONGO_LOG_PATH%/*}
-
-                        # Start MongoDB using workspace paths
-                        mongod --dbpath ${MONGO_DB_PATH} --logpath ${MONGO_LOG_PATH} --fork
-
-                        # Wait loop to ensure MongoDB starts properly
+                        # Wait for MongoDB to be ready
                         for i in {1..30}; do
-                            if mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
+                            if docker exec $(docker-compose ps -q mongo) mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
                                 echo "MongoDB is ready"
                                 exit 0
                             fi
                             sleep 1
                         done
 
-                        # Exit with failure if MongoDB did not start
                         echo "MongoDB failed to start"
                         exit 1
                     '''
