@@ -19,23 +19,10 @@ pipeline {
             }
         }
 
-        stage('Start Services with Docker Compose') {
+        stage('Build and Run Docker Compose') {
             steps {
                 script {
-                    sh 'docker-compose up -d'
-                    sh '''
-                        # Wait for MongoDB to be ready
-                        for i in {1..30}; do
-                            if docker exec $(docker-compose ps -q mongo) mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
-                                echo "MongoDB is ready"
-                                exit 0
-                            fi
-                            sleep 1
-                        done
-
-                        echo "MongoDB failed to start"
-                        exit 1
-                    '''
+                    sh 'docker-compose up -d --build'  // Start the app container using the external MongoDB URI
                 }
             }
         }

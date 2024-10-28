@@ -5,7 +5,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/runcon
+      - MONGODB_URI=${MONGODB_URI}
     depends_on:
       - mongo
     networks:
