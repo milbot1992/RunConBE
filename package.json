@@ -15,10 +15,11 @@
         "supertest": "^6.3.3"
     },
     "devDependencies": {
+        "concurrently": "^9.0.1",
         "husky": "^8.0.3"
     },
     "scripts": {
-        "test": "NODE_ENV=test jest ",
+        "test": "concurrently \"docker-compose up -d mongodb\" \"NODE_ENV=test jest\"",
         "prepare": "husky install",
         "seed": "NODE_ENV=test node ./db/seeds/run-seed.js",
         "seed-prod": "NODE_ENV=production node ./db/seeds/run-seed.js",
