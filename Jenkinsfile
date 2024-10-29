@@ -3,6 +3,13 @@ pipeline {
 
     stages {
 
+        stage('Check User') {
+            steps {
+                sh 'whoami'
+                sh 'groups'
+            }
+        }
+
         stage("Verifying tooling") {
             steps {
                 sh '''
