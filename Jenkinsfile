@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Declare variable to hold the Mongo URI
-        MONGO_URI = credentials('MONGODB_URI')
+        MONGODB_URI = credentials('MONGODB_URI')
     }
 
     stages {
