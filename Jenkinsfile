@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Declare variable to hold the Mongo URI
+        MONGO_URI = credentials('MONGODB_URI')
+    }
+
     stages {
 
         stage('Check User') {
