@@ -46,10 +46,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    nodejs(nodeJSInstallationName: 'nodejs') {
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
+                    sh 'npm install'
+                    sh 'npm test'
                 }
             }
         }
