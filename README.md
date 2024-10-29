@@ -5,6 +5,9 @@ This project is an Express-based API for managing user groups, chat messages, po
 
 The API supports cross-origin resource sharing (CORS), making it suitable for front-end and mobile app integrations. It includes error handling for both general and MongoDB-specific issues, ensuring robust and clear responses.
 
+### Build, Test, Deploy
+This project uses Jenkins for continuous integration and continuous deployment (CI/CD), automating the build, testing, and deployment processes. Once a new commit has been made to he GitHub repo, Jenkins picks this up and the process begins. If the tests pass, Jenkins pushes the new Docker image to Docker Hub, which is subsequently deployed through AWS ECS.
+
 ### Project Structure
 
 ## Project Structure
