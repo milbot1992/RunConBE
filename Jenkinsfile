@@ -8,23 +8,6 @@ pipeline {
 
     stages {
 
-        stage('Check User') {
-            steps {
-                sh 'whoami'
-                sh 'groups'
-            }
-        }
-
-        stage("Verifying tooling") {
-            steps {
-                sh '''
-                    docker version
-                    docker info
-                    docker-compose version
-                '''
-            }
-        }
-
         stage('Preparation') {
             steps {
                 checkout scm
