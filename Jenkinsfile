@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Declare variable to hold the Mongo URI
+        MONGODB_URI = credentials('MONGODB_URI')
+    }
+
     stages {
 
         stage('Preparation') {
@@ -13,11 +18,27 @@ pipeline {
             }
         }
 
+        stage('Start MongoDB') {
+            steps {
+                script {
+                    sh 'docker-compose up -d mongodb'
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 script {
                     sh 'npm install'
-                    sh 'npm run test'
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Stop MongoDB') {
+            steps {
+                script {
+                    sh 'docker-compose down'
                 }
             }
         }

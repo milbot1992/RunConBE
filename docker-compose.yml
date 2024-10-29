@@ -7,21 +7,21 @@ services:
     environment:
       - MONGODB_URI=${MONGODB_URI}
     depends_on:
-      - mongo
+      - mongodb
     networks:
       - app-network
 
-  mongo:
-    image: mongo:4.4
+  mongodb:
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo-data:/data/db
     networks:
       - app-network
 
 volumes:
-  mongo_data:
+  mongo-data:
 
 networks:
   app-network:
