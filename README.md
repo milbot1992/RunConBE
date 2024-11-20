@@ -83,6 +83,7 @@ This project uses Jenkins for continuous integration and continuous deployment (
 1. **Clone the repository:**
    ```
    git clone <repository-url>
+   cd <respository-name>
    ```
 
 2. **Install dependencies:**
